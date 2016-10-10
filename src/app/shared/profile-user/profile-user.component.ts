@@ -14,14 +14,14 @@ export class ProfileUserComponent implements OnInit {
 
   //TODO is this just a nested via that emits?
 
-  @Input() users: User[] = [];
+  @Input() user: User;
 
   ngOnInit() {
     // this.users = this.UserService.getUsers();
     this.route.params.forEach((params: Params) => {
       let id = +params['id']; // (+) converts string 'id' to a number
       // this.UserService.getUser(id).then(user => this.user = user);
-      this.UserService.getUser(id);
+      this.user = this.UserService.getUser(id);
     });
   }
 
