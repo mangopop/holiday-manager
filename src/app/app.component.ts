@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-
 // import {MenuItem} from 'primeng/primeng';
 
 @Component({
@@ -10,5 +9,5 @@ import { Component } from '@angular/core';
 export class AppComponent {
 
   title = 'Holiday Manager';
-    
+
 }

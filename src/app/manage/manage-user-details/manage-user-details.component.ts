@@ -1,7 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { User } from '../../shared/user.ts';
-import { UserService } from '../../shared/user.service.ts'; //i've imported this in module!? do that mean I just don't add it under @component
-import { Router, ActivatedRoute, Params } from '@angular/router';
+import {Component, OnInit, Input} from '@angular/core';
+import {User} from '../../shared/user.ts';
+import {UserService} from '../../shared/user.service.ts'; // i've imported this in module!? do that mean I just don't add it under @component
+import {Router, ActivatedRoute, Params} from '@angular/router';
 
 @Component({
   selector: 'app-profile-user',
@@ -10,9 +10,10 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 })
 export class ManageUserDetailsComponent implements OnInit {
 
-  constructor(private UserService:UserService, private route: ActivatedRoute, private router: Router  ) { }
+  constructor(private UserService: UserService, private route: ActivatedRoute, private router: Router) {
+  }
 
-  //TODO is this just a nested via that emits?
+  // TODO is this just a nested via that emits?
 
   @Input() user: User;
 

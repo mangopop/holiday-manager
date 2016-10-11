@@ -1,17 +1,18 @@
-import { Injectable } from '@angular/core';
-import { User } from './user'; 
-import { USERS } from './mock-user'; 
+import {Injectable} from '@angular/core';
+import {User} from './user';
+import {USERS} from './mock-user';
 
 @Injectable()
 export class UserService {
 
-  constructor() { }
+  constructor() {
+  }
 
   getUsers(): User[] {
     return USERS;
   }
 
-  getUser(id): User{
+  getUser(id): User {
     //grab user by id
     return USERS[id];
   }
