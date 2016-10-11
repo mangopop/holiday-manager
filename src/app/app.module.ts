@@ -18,7 +18,7 @@ import { DashCalComponent } from './dash-cal/dash-cal.component';
 import { ProfileComponent } from './profile/profile.component';
 import { ApproveComponent } from './approve/approve.component';
 import { CalendarComponent } from './calendar/calendar.component';
-import { ProfileUserComponent } from './shared/profile-user/profile-user.component';
+
 
 @NgModule({
   declarations: [
@@ -28,8 +28,7 @@ import { ProfileUserComponent } from './shared/profile-user/profile-user.compone
     DashCalComponent,
     ProfileComponent,
     ApproveComponent,
-    CalendarComponent,    
-    ProfileUserComponent,
+    CalendarComponent
   ],
   imports: [
     BrowserModule,

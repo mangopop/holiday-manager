@@ -6,7 +6,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { ApproveComponent } from './approve/approve.component';
 import { ManageComponent } from './manage/manage.component';
 import { CalendarComponent } from './calendar/calendar.component';
-import { ProfileUserComponent } from './shared/profile-user/profile-user.component';
+// import { ProfileUserComponent } from './shared/profile-user/profile-user.component';
 
 
 const routes: Routes = [];

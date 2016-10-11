@@ -7,7 +7,6 @@ import { UserService } from '../shared/user.service.ts'; //i've imported this in
   selector: 'app-manage',
   templateUrl: './manage.component.html',
   styleUrls: ['./manage.component.css']
-
 })
 export class ManageComponent implements OnInit {
 

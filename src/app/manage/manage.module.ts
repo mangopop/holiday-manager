@@ -7,6 +7,7 @@ import { ManageRoutingModule } from './manage-routing.module'
 import { ManageUserListComponent }    from './manage-user-list/manage-user-list.component';
 import { ManageComponent }  from './manage.component';
 import { SearchComponent } from '../shared/search/search.component';
+import { ManageUserDetailsComponent } from './manage-user-details/manage-user-details.component';
 
 import { UserService } from '../shared/user.service.ts';
 
@@ -19,6 +20,7 @@ import { UserService } from '../shared/user.service.ts';
   ],
   declarations: [
     ManageUserListComponent,
+    ManageUserDetailsComponent,
     ManageComponent,
     SearchComponent
   ],

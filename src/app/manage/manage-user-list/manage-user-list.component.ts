@@ -12,8 +12,7 @@ export class ManageUserListComponent implements OnInit {
   constructor(private router: Router) { }
 
   onSelectUser(user: User) {
-    //TODO user might not be correct route
-      this.router.navigate(['/manage/user', user.id]);
+      this.router.navigate(['manage', user.id]);
     }
 
   @Input() users;
