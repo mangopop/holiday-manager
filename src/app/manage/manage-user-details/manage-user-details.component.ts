@@ -14,14 +14,11 @@ export class ManageUserDetailsComponent implements OnInit {
 
   //TODO is this just a nested via that emits?
 
-  //THIS ISN'T TARGETING THE ROUTER FOR manage.component.html
-
   @Input() user: User;
 
   ngOnInit() {
     // this.users = this.UserService.getUsers();
     this.route.params.forEach((params: Params) => {
-      console.log(params);
       let id = +params['id']; // (+) converts string 'id' to a number
       // this.UserService.getUser(id).then(user => this.user = user);
       this.user = this.UserService.getUser(id);
