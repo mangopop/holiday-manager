@@ -1,6 +1,6 @@
-import {Component, ChangeDetectionStrategy, Input, Output, EventEmitter, OnInit} from '@angular/core';
+import {Component, Input, Output , EventEmitter, OnInit} from '@angular/core';
 import {User} from '../../shared/user';
-import {Router} from '@angular/router';
+
 
 @Component({
   selector: 'app-manage-user-list',
@@ -9,16 +9,13 @@ import {Router} from '@angular/router';
 })
 export class ManageUserListComponent implements OnInit {
 
-  constructor(private router: Router) {
-  }
-
-  // should we emit this to parent? then this is a dumb component. what are the benefits?
-  onSelectUser(user: User) {
-    this.router.navigate(['manage', user.id]);
-  }
-
+  //this is a dumb component
   @Input() users;
-  // @Output() onSelectUser = new EventEmitter<User>();
+  @Output() onSelectUser: EventEmitter<User> = new EventEmitter<User>();
+
+  selectUser(user: User) {
+        this.onSelectUser.emit(user);
+    }
 
   ngOnInit() {
   }

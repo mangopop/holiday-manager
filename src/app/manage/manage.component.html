@@ -6,7 +6,7 @@
 <div class="row">
     <!--list users comp-->
     <div class="small-12 medium-6 columns">
-        <app-manage-user-list [users]="users"></app-manage-user-list>
+        <app-manage-user-list [users]="users" (onSelectUser)="onSelectUser($event)"></app-manage-user-list>
     </div>
     <!--display user comp-->
     <div class="small-12 medium-6 columns">
