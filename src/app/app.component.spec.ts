@@ -1,5 +1,5 @@
 /* tslint:disable:no-unused-variable */
-
+declare var it, expect, describe, toBe, beforeEach;
 import { TestBed, async } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 //comps
@@ -8,8 +8,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { ProfileComponent } from './profile/profile.component';
 import { ApproveComponent } from './approve/approve.component';
 import { ManageComponent } from './manage/manage.component';
-import { ManageUserListComponent } from './manage/manage-user-list/manage-user-list.component';
-import { ManageUserDetailsComponent } from './manage/manage-user-details/manage-user-details.component';
+// import { ManageUserListComponent } from './manage/manage-user-list/manage-user-list.component';
+// import { ManageUserDetailsComponent } from './manage/manage-user-details/manage-user-details.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { InfoPanelComponent } from './shared/info-panel/info-panel.component';
 import { DashCalComponent } from './dash-cal/dash-cal.component';
@@ -19,12 +19,12 @@ import {FIREBASE_PROVIDERS, defaultFirebase, AngularFire, AngularFireModule} fro
 
 describe('App: HolidayManager', () => {
   beforeEach(() => {
-    const config = {
-      apiKey: "123",
-      authDomain: "123.firebaseapp.com",
-      databaseURL: "https://123.firebaseio.com",
-      storageBucket: "123.appspot.com",
-    };
+    // const config = {
+    //   apiKey: "123",
+    //   authDomain: "123.firebaseapp.com",
+    //   databaseURL: "https://123.firebaseio.com",
+    //   storageBucket: "123.appspot.com",
+    // };
 
     TestBed.configureTestingModule({
       // providers: [FIREBASE_PROVIDERS, defaultFirebase(config)],
@@ -36,9 +36,9 @@ describe('App: HolidayManager', () => {
         DashCalComponent,
         ProfileComponent,
         ApproveComponent,
-        ManageUserListComponent,
-        ManageUserDetailsComponent,
-        ManageComponent,
+        // ManageUserListComponent,
+        // ManageUserDetailsComponent,
+        // ManageComponent,
         CalendarComponent,
         SearchComponent
       ],
