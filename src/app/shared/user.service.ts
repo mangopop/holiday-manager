@@ -14,6 +14,7 @@ export class UserService {
 
   getUser(id): User {
     //grab user by id
+    id = id - 1; 
     return USERS[id];
   }
 

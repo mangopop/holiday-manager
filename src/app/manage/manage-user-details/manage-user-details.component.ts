@@ -13,7 +13,8 @@ export class ManageUserDetailsComponent implements OnInit {
   constructor(private UserService: UserService, private route: ActivatedRoute, private router: Router) {
   }
 
-  // TODO is this just a nested via that emits?
+  // TODO this page will crash is name is undefined
+  // is this just a nested via that emits?
 
   @Input() user: User;
 

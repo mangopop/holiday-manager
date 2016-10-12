@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule }   from '@angular/router';
 import { ManageModule } from './manage/manage.module'
+import { AngularFireModule } from 'angularfire2';
 
 import { AppComponent } from './app.component';
 //routing
@@ -19,6 +20,15 @@ import { ProfileComponent } from './profile/profile.component';
 import { ApproveComponent } from './approve/approve.component';
 import { CalendarComponent } from './calendar/calendar.component';
 
+// Must export the config
+export const firebaseConfig = {
+    apiKey: "AIzaSyDt7XPG5SlKZz4iwYGgwrFatSYVSFltOkQ",
+    authDomain: "holiday-51a9a.firebaseapp.com",
+    databaseURL: "https://holiday-51a9a.firebaseio.com",
+    storageBucket: "holiday-51a9a.appspot.com",
+    messagingSenderId: "294500531950"
+};
+
 
 @NgModule({
   declarations: [
@@ -31,6 +41,7 @@ import { CalendarComponent } from './calendar/calendar.component';
     CalendarComponent
   ],
   imports: [
+    AngularFireModule.initializeApp(firebaseConfig),
     BrowserModule,
     FormsModule,
     HttpModule,
