@@ -5,17 +5,14 @@ import { HttpModule } from '@angular/http';
 import { RouterModule }   from '@angular/router';
 import { ManageModule } from './manage/manage.module'
 import { AngularFireModule } from 'angularfire2';
-
 import { AppComponent } from './app.component';
 //routing
 import { HolidayManagerRoutingModule } from './app-routing.module'
-
 // shared
 import { InfoPanelComponent } from './shared/info-panel/info-panel.component';
 //dashboard
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DashCalComponent } from './dash-cal/dash-cal.component';
-
 import { ProfileComponent } from './profile/profile.component';
 import { ApproveComponent } from './approve/approve.component';
 import { CalendarComponent } from './calendar/calendar.component';

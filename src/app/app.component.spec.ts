@@ -7,7 +7,7 @@ import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ProfileComponent } from './profile/profile.component';
 import { ApproveComponent } from './approve/approve.component';
-import { ManageComponent } from './manage/manage.component';
+// import { ManageComponent } from './manage/manage.component';
 // import { ManageUserListComponent } from './manage/manage-user-list/manage-user-list.component';
 // import { ManageUserDetailsComponent } from './manage/manage-user-details/manage-user-details.component';
 import { CalendarComponent } from './calendar/calendar.component';
@@ -32,15 +32,12 @@ describe('App: HolidayManager', () => {
       declarations: [
         AppComponent,
         DashboardComponent,
-        InfoPanelComponent,
-        DashCalComponent,
         ProfileComponent,
         ApproveComponent,
-        // ManageUserListComponent,
-        // ManageUserDetailsComponent,
-        // ManageComponent,
         CalendarComponent,
-        SearchComponent
+        InfoPanelComponent,
+        DashCalComponent,        
+        // ManageComponent,
       ],
       imports: [
         // AngularFireModule.initializeApp({
@@ -54,7 +51,7 @@ describe('App: HolidayManager', () => {
           { path: 'dashboard', component: DashboardComponent },
           { path: 'profile', component: ProfileComponent },
           { path: 'approve', component: ApproveComponent },
-          { path: 'manage', component: ManageComponent },
+          // { path: 'manage', component: ManageComponent },
           { path: 'calendar', component: CalendarComponent },
         ]),
       ]

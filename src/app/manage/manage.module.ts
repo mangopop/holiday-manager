@@ -18,6 +18,7 @@ import { UserService } from '../shared/user.service.ts';
     FormsModule,
     ManageRoutingModule
   ],
+  //exports: [ ContactComponent ],// if other modules needed it
   declarations: [
     ManageUserListComponent,
     ManageUserDetailsComponent,
