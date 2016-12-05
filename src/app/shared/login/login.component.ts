@@ -8,12 +8,27 @@ import { AngularFire, AuthProviders, AuthMethods } from 'angularfire2';
 })
 export class LoginComponent{
 
-  constructor(private af: AngularFire) { }
-
+  loginStatus = false;
   login = {
     email:'',
     password:''
   };
+
+  constructor(private af: AngularFire) {
+    this.af.auth.subscribe(auth => {
+      console.log(auth);      
+      if(auth != null){
+          this.loginStatus = true;
+      }else{
+          this.loginStatus = false;
+      }
+      
+    });
+  }
+
+  logout() {
+     this.af.auth.logout();
+  }
 
   onSubmit() {
     this.af.auth.login(this.login,{
@@ -22,6 +37,6 @@ export class LoginComponent{
     });
   }
 
-    get diagnostic() { return JSON.stringify(this.login); }
+  get diagnostic() { return JSON.stringify(this.login); }
 
 }
