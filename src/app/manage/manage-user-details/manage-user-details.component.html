@@ -1,2 +1,40 @@
- Username:
-<p>{{user.name}}</p>
+
+<a (click)="newUser()" routerLink="/manage/user/new">New user</a>
+<!--<a (click)="newUser()">New user</a>-->
+<!--<ul>
+    <li>Username: {{ (user | async)?.firstname }}</li>
+    <li>Surname: {{ (user | async)?.surname }}</li>
+</ul>-->
+
+<!--<ul [hidden]="form">
+    <li>Username: {{ user.firstname }} : </li>
+    <li>Surname: {{ user.surname }}</li>
+</ul>-->
+<!--<button [hidden]="form" class="button" (click)="editUser(); form = true">Edit</button>-->
+
+{{diagnostic}}
+<form (ngSubmit)="onSubmit()" #userForm="ngForm">
+    
+    <label for="firstname">Firstname</label>
+    <input type="text" 
+      id="firstname"
+      [(ngModel)]="user.firstname" 
+      name="firstname"
+     required #spy >
+     {{spy.firstname}}
+     {{spy.className}}
+
+    <label for="surname">Surname</label>
+    <input type="text" id="surname" name="surname"
+    [(ngModel)]="user.surname"
+    required>
+
+    <button type="submit" class="button" [disabled]="!userForm.form.valid">
+        <span>Submit</span>
+        <!--<span *ngIf="!new">Update</span>-->
+        </button>
+    
+    <button type="button" class="button" (click)="reset()">Reset</button>
+  </form>
+  
+  <button *ngIf="!new" class="button" [disabled]="!userForm.form.valid" (click)="updateUser()">Update</button>

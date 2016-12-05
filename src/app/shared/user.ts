@@ -1,4 +1,8 @@
 export class User {
-  id: number;
-  name: string;
+  id?: number;
+  firstname: string;
+  surname: string;
+  $key?: string;
+  $value?: string;
+  $exists?: string;
 }

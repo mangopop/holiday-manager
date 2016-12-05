@@ -16,6 +16,7 @@ import { DashCalComponent } from './dash-cal/dash-cal.component';
 import { SearchComponent } from './shared/search/search.component';
 //AF
 import {FIREBASE_PROVIDERS, defaultFirebase, AngularFire, AngularFireModule} from 'angularfire2';
+import { ProfileDetailsComponent } from './profile/profile-details/profile-details.component';
 
 describe('App: HolidayManager', () => {
   beforeEach(() => {
@@ -36,7 +37,8 @@ describe('App: HolidayManager', () => {
         ApproveComponent,
         CalendarComponent,
         InfoPanelComponent,
-        DashCalComponent,        
+        DashCalComponent,
+        ProfileDetailsComponent,        
         // ManageComponent,
       ],
       imports: [

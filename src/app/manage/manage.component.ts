@@ -14,15 +14,20 @@ export class ManageComponent {
 
   public users;
 
-  constructor(userList: UserListService, public router: Router) {
-    this.users = userList.getUsers();
-    // console.log(userList.getUsers()); //this work(ed) probably because it's called first
+  constructor(public userList$: UserListService, public router: Router) {
+    this.users = userList$.getUsers();
   }
 
   //should listen emitted event, Output is on element
   onSelectUser(user: User) {
-    console.log(user.id);
-    this.router.navigate(['manage', user.id]);
+    // testing docs use: let url = `/heroes/${hero.id}`; this.router.navigateByUrl(url);
+    this.router.navigate(['manage/user', user.$key]);
+  }
+
+  // don't forget to add to Output on html (stupid)
+  onDeleteUser(user){
+    this.userList$.deleteUser(user);
+    this.router.navigate(['manage/user/new']);
   }
 
 

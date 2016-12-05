@@ -9,6 +9,7 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
 
+  id = 1; // TODO this will be the user auth id
   title = 'Holiday Manager';
 
 }

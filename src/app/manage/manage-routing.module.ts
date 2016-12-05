@@ -4,9 +4,10 @@ import { Routes, RouterModule } from '@angular/router';
 import { ManageUserDetailsComponent } from './manage-user-details/manage-user-details.component';
 import { ManageUserListComponent } from './manage-user-list/manage-user-list.component';
 import { ManageComponent } from './manage.component';
+import { UserFormComponent } from './user-form/user-form.component';
 
-import { UserService } from '../shared/user.service.ts';
-import { User } from '../shared/user.ts';
+// import { UserService } from '../shared/user.service';
+// import { User } from '../shared/user.ts';
 
 const routes: Routes = [];
 
@@ -16,7 +17,8 @@ const routes: Routes = [];
       {
         path: 'manage', component: ManageComponent,
         children: [
-          { path: ':id', component: ManageUserDetailsComponent }
+          { path: 'user/:id', component: ManageUserDetailsComponent },
+          { path: 'user/new/', component: ManageUserDetailsComponent },          
         ]
       }
     ])

@@ -4,11 +4,13 @@
 
     <nav>
       <a routerLink="/dashboard" routerLinkActive="active">dashboard</a>
-      <a routerLink="/profile">profile</a>
+      <a routerLink="/profile/{{id}}">profile</a>
       <a routerLink="/approve">approve</a>
       <a routerLink="/calendar">calendar</a>
       <a routerLink="/manage">manage</a>
     </nav>
+
+    <app-login></app-login>
 
     <router-outlet></router-outlet>
   </div>

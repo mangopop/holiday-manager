@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {User} from './user';
-import {USERS} from './mock-user';
+// import {USERS} from './mock-user';
 
 @Injectable()
 export class UserService {
@@ -8,14 +8,14 @@ export class UserService {
   constructor() {
   }
 
-  getUsers(): User[] {
-    return USERS;
-  }
+  // getUsers(): User[] {
+  //   return USERS;
+  // }
 
-  getUser(id): User {
-    //grab user by id
-    id = id - 1; 
-    return USERS[id];
-  }
+  // getUser(id): User {
+  //   //grab user by id
+  //   id = id - 1; 
+  //   return USERS[id];
+  // }
 
 }

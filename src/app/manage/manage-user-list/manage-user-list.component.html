@@ -1,3 +1,4 @@
+
 <ul>
-  <li *ngFor="let user of users  | async" (click)="selectUser(user)">{{user.name}}</li>
+  <li *ngFor="let user of users  | async" (click)="selectUser(user)">{{user.firstname}} : <a (click)="deleteUser(user)">delete</a></li>
 </ul>

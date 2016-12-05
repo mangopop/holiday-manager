@@ -9,7 +9,8 @@ import { ManageComponent }  from './manage.component';
 import { SearchComponent } from '../shared/search/search.component';
 import { ManageUserDetailsComponent } from './manage-user-details/manage-user-details.component';
 
-import { UserListService } from '../shared/user-list.service.ts';
+import { UserListService } from '../shared/user-list.service';
+import { UserFormComponent } from './user-form/user-form.component';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { UserListService } from '../shared/user-list.service.ts';
     ManageUserListComponent,
     ManageUserDetailsComponent,
     ManageComponent,
-    SearchComponent
+    SearchComponent,
+    UserFormComponent
   ],
   providers: [
     UserListService //make this available for the module, which is fine.

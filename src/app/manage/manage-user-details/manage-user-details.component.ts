@@ -1,8 +1,10 @@
-import {Component, OnInit, Input} from '@angular/core';
-import {User} from '../../shared/user.ts';
-import {UserListService} from '../../shared/user-list.service.ts'; // i've imported this in module!? do that mean I just don't add it under @component
-import {Router, ActivatedRoute, Params} from '@angular/router';
-import {FirebaseListObservable} from 'angularfire2';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { User } from '../../shared/user';
+import { UserListService } from '../../shared/user-list.service'; // i've imported this in module!? do that mean I just don't add it under @component
+import { Router, ActivatedRoute, Params } from '@angular/router';
+import { FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
+import { Observable } from 'rxjs/Observable'
 
 @Component({
   selector: 'app-profile-user',
@@ -11,20 +13,77 @@ import {FirebaseListObservable} from 'angularfire2';
 })
 export class ManageUserDetailsComponent implements OnInit {
 
-  constructor(private UserListService: UserListService, private route: ActivatedRoute, private router: Router) {
+  constructor(private UserListService$: UserListService, private route: ActivatedRoute, private router: Router) {
   }
 
-  // TODO this page will crash is name is undefined
+  // getting the user from the service again is a bit slow.
 
   // @Input() user :FirebaseListObservable<any[]>;
-  @Input() user;
+
+  userData;
+  user: User = {
+    firstname: '',
+    surname: ''
+  }
+
+  form = false;
+  new = false;
+  submitted = false;
+
+  newUser() {
+    this.form = true;
+    this.new = true;
+    this.reset();
+  }
+
+  onSubmit() {
+    this.UserListService$.addUser(this.user);
+    this.submitted = true;
+    // if (!this.new) {
+    //   this.UserListService$.updateUser(this.user.$key, {
+    //     firstname: this.user.firstname,
+    //     surname: this.user.surname
+    //   });
+    // }
+  }
+
+  updateUser(){   
+      this.UserListService$.updateUser(this.user.$key, {
+        firstname: this.user.firstname,
+        surname: this.user.surname
+      });
+  }
+
+
+  reset() {
+    this.user = {
+      firstname: '',
+      surname: ''
+    }
+  }
+
+  // TODO: Remove this when we're done
+  get diagnostic() { return JSON.stringify(this.user); }
 
   ngOnInit() {
-    // this.users = this.UserService.getUsers();
-    this.route.params.forEach((params: Params) => {
-      let id = +params['id']; // (+) converts string 'id' to a number
-      // this.UserService.getUser(id).then(user => this.user = user);
-      this.user = this.UserListService.getUser(id);
+    // get the id from route params and retrieve users with service. This is instead of passing as input, which could be easier.
+    this.route.params.subscribe((params: Params) => {
+      //let id = +params['id']; // (+) converts string 'id' to a number
+      let id = params['id'];
+      if (id !== 'new'){
+          this.new = false;
+      }
+      this.userData = this.UserListService$.getUser(id);
+
+      this.userData.subscribe(queriedItems => {
+        if (!queriedItems) {
+          this.reset();
+        } else {
+          this.user = queriedItems;
+        }
+
+      });
+
     });
   }
 

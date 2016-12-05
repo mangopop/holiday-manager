@@ -16,6 +16,7 @@ const routes: Routes = [];
     RouterModule.forRoot([
       { path: '', component: DashboardComponent },    
       { path: 'dashboard', component: DashboardComponent },    
+      { path: 'profile/:id', component: ProfileComponent },
       { path: 'profile', component: ProfileComponent },    
       { path: 'approve', component: ApproveComponent },    
       { path: 'manage', component: ManageComponent },    

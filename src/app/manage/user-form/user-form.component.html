@@ -1,0 +1,19 @@
+{{diagnostic}}
+<form (ngSubmit)="onSubmit()" #userForm="ngForm">
+    <label for="name">Firstname</label>
+    <input type="text" 
+      id="firstname"
+      [(ngModel)]="user.firstname" 
+      name="firstname"
+     required #spy >
+     {{user.firstname}}
+     {{spy.className}}
+
+    <label for="alterEgo">Surname</label>
+    <input type="text" id="surname" name="surname"
+    [(ngModel)]="user.surname"
+    required>
+
+    <button type="submit" class="button" [disabled]="!userForm.form.valid">Submit</button>
+    <button type="button" class="button" (click)="reset()">Reset</button>
+  </form>

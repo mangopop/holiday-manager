@@ -1,10 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule }   from '@angular/router';
 import { ManageModule } from './manage/manage.module'
-import { AngularFireModule } from 'angularfire2';
+import { AngularFireModule , AuthProviders, AuthMethods } from 'angularfire2';
 import { AppComponent } from './app.component';
 //routing
 import { HolidayManagerRoutingModule } from './app-routing.module'
@@ -16,6 +17,8 @@ import { DashCalComponent } from './dash-cal/dash-cal.component';
 import { ProfileComponent } from './profile/profile.component';
 import { ApproveComponent } from './approve/approve.component';
 import { CalendarComponent } from './calendar/calendar.component';
+import { ProfileDetailsComponent } from './profile/profile-details/profile-details.component';
+import { LoginComponent } from './shared/login/login.component';
 
 // Must export the config
 export const firebaseConfig = {
@@ -26,6 +29,11 @@ export const firebaseConfig = {
     messagingSenderId: "294500531950"
 };
 
+const myFirebaseAuthConfig = {
+  provider: AuthProviders.Password,
+  method: AuthMethods.Password
+}
+
 
 @NgModule({
   declarations: [
@@ -35,12 +43,15 @@ export const firebaseConfig = {
     DashCalComponent,
     ProfileComponent,
     ApproveComponent,
-    CalendarComponent
+    CalendarComponent,
+    ProfileDetailsComponent,
+    LoginComponent
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpModule,
     ManageModule,
     HolidayManagerRoutingModule
