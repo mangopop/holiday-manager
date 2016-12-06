@@ -9,6 +9,7 @@ import { AngularFire, AuthProviders, AuthMethods } from 'angularfire2';
 export class LoginComponent{
 
   loginStatus = false;
+  userEmail;
   login = {
     email:'',
     password:''
@@ -18,7 +19,10 @@ export class LoginComponent{
     this.af.auth.subscribe(auth => {
       console.log(auth);      
       if(auth != null){
+        // can't get email perhaps try this https://firebase.google.com/docs/auth/web/manage-users
           this.loginStatus = true;
+          console.log(auth.auth.email);          
+          this.userEmail = auth.auth.email;    
       }else{
           this.loginStatus = false;
       }

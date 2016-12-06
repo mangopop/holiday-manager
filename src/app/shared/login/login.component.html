@@ -1,4 +1,6 @@
+<p *ngIf="loginStatus">Logged in as: {{userEmail}}</p>
 <a *ngIf="loginStatus" (click)="logout()">Logout</a>
+
 
 <form *ngIf="!loginStatus" (ngSubmit)="onSubmit()" #loginForm="ngForm">
     <label for="name">email</label>

@@ -19,6 +19,8 @@ import { ApproveComponent } from './approve/approve.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { ProfileDetailsComponent } from './profile/profile-details/profile-details.component';
 import { LoginComponent } from './shared/login/login.component';
+import { BookComponent } from './book/book.component';
+import { BookFormComponent } from './book/book-form/book-form.component';
 
 // Must export the config
 export const firebaseConfig = {
@@ -45,7 +47,9 @@ const myFirebaseAuthConfig = {
     ApproveComponent,
     CalendarComponent,
     ProfileDetailsComponent,
-    LoginComponent
+    LoginComponent,
+    BookComponent,
+    BookFormComponent
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),

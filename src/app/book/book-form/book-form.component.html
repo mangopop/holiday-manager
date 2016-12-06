@@ -1,0 +1,41 @@
+{{diagnostic}}
+<form (ngSubmit)="onSubmit()" #bookingForm="ngForm">
+
+<!--type-->
+  <label for="type">Type</label>
+  <select name="type" [(ngModel)]="booking.type">
+      <option *ngFor="let type of types" [selected]="Paid" [value]="type">  
+        {{type}}
+      </option>
+  </select>
+
+<!--date ranges-->
+  <label for="fromDate">fromDate</label>
+  <input type="date" name="fromDate" id="fromDate" (change)="updateRange()" [(ngModel)]="booking.fromDate">
+  <label for="toDate">toDate</label>
+  <input type="date" name="toDate" id="toDate" (change)="updateRange()" [(ngModel)]="booking.toDate">
+
+<!--days-->
+  <label for="days">Days</label>
+  <div *ngFor="let date of dates">
+    {{date.date}}  
+    <select name="days" [(ngModel)]="date.slot">
+        <option *ngFor="let length of lengths" [selected]="Full" [value]="length">  
+          {{length}}
+        </option>
+    </select>
+  </div>
+
+  <button type="submit" class="button" [disabled]="!bookingForm.form.valid">Submit</button>
+</form>
+
+<p>from: {{booking.fromDate}}</p>
+<p>to: {{booking.toDate}}</p>
+<p>days: {{dayDiff}}</p>
+<p>dates: {{dates | json}}</p>
+
+
+<!--<h3>Choose Type</h3>
+<h3>Choose fromDate</h3>
+<h3>Choose Details</h3>
+<h3>Comment</h3>-->
