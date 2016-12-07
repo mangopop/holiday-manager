@@ -16,8 +16,16 @@ export class DashCalComponent implements OnInit {
   months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
+  //test data
+  dates = ['2016/01/01', '2016/01/04'];
+
   createCal() {
     this.years.forEach(year => {
+
+      var yearDates = this.dates.filter(value => {
+        return value.indexOf(year) >= 0;
+      })
+
 
       // clear all months each year
       this.monthArr = [];
@@ -32,7 +40,31 @@ export class DashCalComponent implements OnInit {
 
         // add days
         for (var i = 1; i < monthDays + 1; i++) {
-          monthDayArr.push(i);
+          // monthDays is just number we have no date, so could split date and do comparison
+
+          // working one day here ie 2016/01/01 so only should be one match
+          // could we be working on too many dates? 
+          var match = false;
+          this.dates.forEach(date => {                   
+            var splitDate = date.split('/');   
+            if (splitDate[0] === year) {
+              console.log('year matched');
+              if (parseInt(splitDate[1]) === month) {
+                console.log('month matched');
+                if (parseInt(splitDate[2]) === i) {
+                  console.log('day matched');   
+                  // we've found a match for this date, set booked                 
+                  monthDayArr.push({ day: i, booked: true });
+                  // set for default-to-false skipping
+                  match = true;
+                }
+              }
+            }
+          });
+          if(!match){
+            monthDayArr.push({ day: i, booked: false });
+          }
+          
         }
 
         // shift days along by day index

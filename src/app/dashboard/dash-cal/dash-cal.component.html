@@ -1,10 +1,11 @@
-<table>
+<table class="cal-table">
   <tr>
     <th width='30' *ngFor="let day of daysOfWeekTH">{{day[0] | uppercase}}</th>
   </tr>
   <tr *ngFor="let month of monthArr">
-    <td *ngFor="let monthDay of month">
-      <span>{{monthDay}}</span>
+    <td *ngFor="let monthDay of month" [class.booked]="monthDay.booked">
+      <span *ngIf="!monthDay.booked">{{monthDay.day}}</span>
+      <a [routerLink]="['/book', monthDay.day]" *ngIf="monthDay.booked">{{monthDay.day}}</a>
     </td>
   </tr>
 
