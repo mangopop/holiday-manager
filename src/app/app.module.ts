@@ -13,7 +13,7 @@ import { HolidayManagerRoutingModule } from './app-routing.module'
 import { InfoPanelComponent } from './shared/info-panel/info-panel.component';
 //dashboard
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { DashCalComponent } from './dash-cal/dash-cal.component';
+import { DashCalComponent } from './dashboard/dash-cal/dash-cal.component';
 import { ProfileComponent } from './profile/profile.component';
 import { ApproveComponent } from './approve/approve.component';
 import { CalendarComponent } from './calendar/calendar.component';

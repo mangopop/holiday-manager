@@ -1,0 +1,11 @@
+<table>
+  <tr>
+    <th width='30' *ngFor="let day of daysOfWeekTH">{{day[0] | uppercase}}</th>
+  </tr>
+  <tr *ngFor="let month of monthArr">
+    <td *ngFor="let monthDay of month">
+      <span>{{monthDay}}</span>
+    </td>
+  </tr>
+
+</table>
