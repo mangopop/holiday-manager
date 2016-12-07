@@ -10,7 +10,7 @@ import * as moment from 'moment';
   selector: 'app-book-form',
   templateUrl: './book-form.component.html',
   styleUrls: ['./book-form.component.css'],
-  providers: [HolidayService,LoginStatusService]
+  // providers: [HolidayService,LoginStatusService]
 })
 export class BookFormComponent implements OnInit {
 

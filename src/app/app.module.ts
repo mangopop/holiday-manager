@@ -4,8 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule }   from '@angular/router';
-import { ManageModule } from './manage/manage.module'
+import { ManageModule } from './manage/manage.module';
+import { BookModule } from './book/book.module';
 import { AngularFireModule , AuthProviders, AuthMethods } from 'angularfire2';
+//app
 import { AppComponent } from './app.component';
 //routing
 import { HolidayManagerRoutingModule } from './app-routing.module'
@@ -19,8 +21,9 @@ import { ApproveComponent } from './approve/approve.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { ProfileDetailsComponent } from './profile/profile-details/profile-details.component';
 import { LoginComponent } from './shared/login/login.component';
-import { BookComponent } from './book/book.component';
-import { BookFormComponent } from './book/book-form/book-form.component';
+
+// import { BookComponent } from './book/book.component';
+// import { BookFormComponent } from './book/book-form/book-form.component';
 
 // Must export the config
 export const firebaseConfig = {
@@ -47,9 +50,7 @@ const myFirebaseAuthConfig = {
     ApproveComponent,
     CalendarComponent,
     ProfileDetailsComponent,
-    LoginComponent,
-    BookComponent,
-    BookFormComponent
+    LoginComponent
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -58,7 +59,8 @@ const myFirebaseAuthConfig = {
     ReactiveFormsModule,
     HttpModule,
     ManageModule,
-    HolidayManagerRoutingModule
+    BookModule,
+    HolidayManagerRoutingModule    
   ],
   providers: [],
   bootstrap: [AppComponent]

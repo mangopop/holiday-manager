@@ -1,7 +1,7 @@
 import { NgModule }       from '@angular/core';
 import { CommonModule }   from '@angular/common';
 import { FormsModule }    from '@angular/forms';
-
+//routing
 import { ManageRoutingModule } from './manage-routing.module'
 //components
 import { ManageUserListComponent }    from './manage-user-list/manage-user-list.component';
