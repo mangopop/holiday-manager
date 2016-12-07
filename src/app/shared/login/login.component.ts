@@ -16,6 +16,7 @@ export class LoginComponent{
   };
 
   constructor(private af: AngularFire) {
+    // TODO: might want this as service
     this.af.auth.subscribe(auth => {
       console.log(auth);      
       if(auth != null){

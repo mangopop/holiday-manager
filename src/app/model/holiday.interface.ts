@@ -1,5 +1,5 @@
-export class Holiday{
-    userId:string;
+export interface Holiday{
+    id?:string;
     type: string;
     dates: string[];
     daysTaken:number;

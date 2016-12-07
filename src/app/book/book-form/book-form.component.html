@@ -3,7 +3,8 @@
 
 <!--type-->
   <label for="type">Type</label>
-  <select name="type" [(ngModel)]="booking.type">
+  <select name="type" [(ngModel)]="booking.type" required>
+      <!--need to set type on model-->
       <option *ngFor="let type of types" [selected]="Paid" [value]="type">  
         {{type}}
       </option>
@@ -11,16 +12,16 @@
 
 <!--date ranges-->
   <label for="fromDate">fromDate</label>
-  <input type="date" name="fromDate" id="fromDate" (change)="updateRange()" [(ngModel)]="booking.fromDate">
+  <input type="date" name="fromDate" id="fromDate" (change)="updateRange()" [(ngModel)]="booking.fromDate" required>
   <label for="toDate">toDate</label>
-  <input type="date" name="toDate" id="toDate" (change)="updateRange()" [(ngModel)]="booking.toDate">
+  <input type="date" name="toDate" id="toDate" (change)="updateRange()" [(ngModel)]="booking.toDate" required>
 
 <!--days-->
   <label for="days">Days</label>
   <div *ngFor="let date of dates">
     {{date.date}}  
-    <select name="days" [(ngModel)]="date.slot">
-        <option *ngFor="let length of lengths" [selected]="Full" [value]="length">  
+    <select name="days" [(ngModel)]="date.slot" required>
+        <option *ngFor="let length of lengths" [value]="length">  
           {{length}}
         </option>
     </select>
@@ -29,10 +30,12 @@
   <button type="submit" class="button" [disabled]="!bookingForm.form.valid">Submit</button>
 </form>
 
-<p>from: {{booking.fromDate}}</p>
+
+
+<!--<p>from: {{booking.fromDate}}</p>
 <p>to: {{booking.toDate}}</p>
-<p>days: {{dayDiff}}</p>
-<p>dates: {{dates | json}}</p>
+<p>days: {{booking.daysTaken}}</p>
+<p>dates: {{dates | json}}</p>-->
 
 
 <!--<h3>Choose Type</h3>
