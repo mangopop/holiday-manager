@@ -6,6 +6,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { ApproveComponent } from './approve/approve.component';
 import { ManageComponent } from './manage/manage.component';
 import { BookComponent } from './book/book.component';
+import { BookFormComponent } from './book/book-form/book-form.component';
 import { CalendarComponent } from './calendar/calendar.component';
 // import { ProfileUserComponent } from './shared/profile-user/profile-user.component';
 
@@ -21,7 +22,7 @@ const routes: Routes = [];
       { path: 'profile', component: ProfileComponent },    
       { path: 'approve', component: ApproveComponent },    
       { path: 'manage', component: ManageComponent },    
-      { path: 'book', component: BookComponent },    
+      { path: 'book', component: BookFormComponent },    
       { path: 'calendar', component: CalendarComponent },    
     ])
   ],
