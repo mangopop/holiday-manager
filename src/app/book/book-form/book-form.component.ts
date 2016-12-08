@@ -1,8 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Holiday } from '../../model/holiday';
 // import { Holiday } from '../../model/holiday.interface';
-import {HolidayService} from '../../shared/holiday.service';
-import {LoginStatusService} from '../../shared/login-status.service';
+import { HolidayService } from '../../shared/holiday.service';
+import { LoginStatusService } from '../../shared/login-status.service';
+
+import { FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
+import { Observable } from 'rxjs/Observable'
+
 import * as moment from 'moment';
 // declare var moment: any;
 
@@ -14,21 +19,19 @@ import * as moment from 'moment';
 })
 export class BookFormComponent implements OnInit {
 
-  constructor(public HolidayService: HolidayService) { }
-
-  // TODO: we need to add the userid to each holiday  
+  constructor(public LoginStatus: LoginStatusService, public HolidayService: HolidayService, private route: ActivatedRoute, private router: Router) { }
 
   // dates = [moment('D/M/YYYY'),moment('D/M/YYYY').add(1,'days')];
-  dates: string[];
+  // dates: string[];
   dayDiff: number;
 
   // we can fill in all values, or none. But then the form thinks it is filled in
   public booking = new Holiday();
-  
+
   public types = [
     'Paid',
     'Unpaid',
-    'Leave', 
+    'Leave',
     'Sick'
   ];
 
@@ -40,8 +43,7 @@ export class BookFormComponent implements OnInit {
 
   enumerateDaysBetweenDates(startDate, endDate) {
     var now = startDate, dates = [];
-    var format = 'D/M/YYYY';
-    //console.log(now.format(format), endDate.format(format));
+    var format = 'D-M-YYYY';
 
     while (now.isSameOrBefore(endDate)) {
       if (now.day() !== 6 && now.day() !== 0) {
@@ -57,22 +59,55 @@ export class BookFormComponent implements OnInit {
   updateRange() {
     this.booking.daysTaken = moment(this.booking.fromDate).diff(moment(this.booking.toDate), 'days');
     //for each week day, add to array
-    this.dates = this.enumerateDaysBetweenDates(moment(this.booking.fromDate), moment(this.booking.toDate));
-    this.booking.dates = this.dates;
+    this.booking.dates = this.enumerateDaysBetweenDates(moment(this.booking.fromDate), moment(this.booking.toDate));
+    // this.booking.dates = this.dates;
   }
 
-  onSubmit(){
+  onSubmit() {
     console.log('submit');
     this.HolidayService.addHoliday(this.booking);
-    
   }
-
 
   // TODO: Remove this when we're done
   get diagnostic() { return JSON.stringify(this.booking); }
 
   ngOnInit() {
+    // get the id from route params
+    this.route.params.subscribe((params: Params) => {
+      // let id = +params['id']; // (+) converts string 'id' to a number
+      let id = params['id'];
+      console.log(id);
 
+      if (id) {
+        const userId = this.LoginStatus.getStatus();
+        const bookingData = this.HolidayService.getHolidays(userId.uid);
+        
+        // this will return multiple bookings
+        bookingData.subscribe(data => {
+          console.log(data);
+
+          // filter out single booking using key
+
+          const book = data.filter( obj => obj.$key === id);
+          console.log(book);
+          this.booking = book[0];
+          
+          // this.booking = {
+          //   userId: '',
+          //   type: 'Paid',
+          //   dates: [
+          //     { date: '2016-12-01', slot: 'Full' },
+          //     { date: '2016-12-02', slot: 'Full' },
+          //     { date: '2016-12-05', slot: 'Full' }
+          //   ],
+          //   daysTaken: 3,
+          //   fromDate: '2016-01-01',
+          //   toDate: '2016-01-05'
+          // }
+
+        });
+      }
+    });
   }
 
 }

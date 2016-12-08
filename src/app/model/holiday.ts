@@ -1,7 +1,7 @@
 export class Holiday{
     userId:string;
     type: string;
-    dates: string[];
+    dates: any[];
     daysTaken:number;
     fromDate:string;
     toDate:string;

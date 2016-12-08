@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { HolidayService } from '../../shared/holiday.service';
+import { LoginStatusService } from '../../shared/login-status.service';
+import { FirebaseListObservable } from 'angularfire2';
 import * as moment from 'moment';
 
 @Component({
@@ -8,23 +11,50 @@ import * as moment from 'moment';
 })
 export class DashCalComponent implements OnInit {
 
-  constructor() { }
+  constructor(public LoginStatus: LoginStatusService, public HolidayService: HolidayService) { }
 
-  daysOfWeekTH = [];
-  years = ['2016'];
-  monthArr = [];
-  months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  daysOfWeekTH: string[] = [];
+  years: string[] = ['2016'];
+  monthArr: any[] = [];
+  months: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  daysOfWeek: string[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  dates: any[];
 
-  //test data
-  dates = ['2016/01/01', '2016/01/04'];
+
+  //get holidays
+  getHols() {
+    const holidayData: FirebaseListObservable<any[]> = this.HolidayService.getHolidays(this.LoginStatus.getStatus().uid);
+    holidayData.subscribe(data => {
+
+      //go through each booking and gather 'dates' into a clean date array
+      const nestedDates = data.map(obj => obj.dates.map(dates => {
+        return {
+          date: dates.date,
+          key: obj.$key,
+        }
+      }));
+      this.dates = nestedDates.reduce((prev, curr) => {
+        return prev.concat(curr)
+      }, []);
+      //test
+      // this.dates = [
+      //   { date: '01-12-2016', key: '-KYKAvI3Bwzly1XBwnxv' },
+      //   { date: '04-12-2016', key: '-KYKAvI3Bwzly1XBwnxv' }
+      // ];
+      console.log(this.dates);
+      this.createCal();
+    });
+
+  }
+
 
   createCal() {
     this.years.forEach(year => {
 
-      var yearDates = this.dates.filter(value => {
-        return value.indexOf(year) >= 0;
-      })
+
+      // var yearDates = this.dates.filter(value => {
+      //   return value.indexOf(year) >= 0;
+      // })
 
 
       // clear all months each year
@@ -33,7 +63,7 @@ export class DashCalComponent implements OnInit {
       this.months.forEach(month => {
 
         // clears day each month
-        var monthDayArr = [];
+        var monthDayArr: any[] = [];
         var currentDay = moment(year + "-" + month).format("ddd");
         var monthPos = this.daysOfWeek.indexOf(currentDay);
         var monthDays = moment(year + "-" + month).daysInMonth();
@@ -45,26 +75,26 @@ export class DashCalComponent implements OnInit {
           // working one day here ie 2016/01/01 so only should be one match
           // could we be working on too many dates? 
           var match = false;
-          this.dates.forEach(date => {                   
-            var splitDate = date.split('/');   
-            if (splitDate[0] === year) {
-              console.log('year matched');
+          this.dates.forEach(dateObj => {
+            var splitDate = dateObj.date.split('-');
+            if (splitDate[2] === year) {
+              // console.log('year matched');
               if (parseInt(splitDate[1]) === month) {
-                console.log('month matched');
-                if (parseInt(splitDate[2]) === i) {
-                  console.log('day matched');   
-                  // we've found a match for this date, set booked                 
-                  monthDayArr.push({ day: i, booked: true });
+                // console.log('month matched');
+                if (parseInt(splitDate[0]) === i) {
+                  // console.log('day matched');   
+                  // we've found a match for this date, set booked and key                 
+                  monthDayArr.push({ day: i, booked: true, key:dateObj.key });
                   // set for default-to-false skipping
                   match = true;
                 }
               }
             }
           });
-          if(!match){
+          if (!match) {
             monthDayArr.push({ day: i, booked: false });
           }
-          
+
         }
 
         // shift days along by day index
@@ -88,7 +118,9 @@ export class DashCalComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.createCal();
+    this.getHols();
+    // this.createCal();
+
   }
 
 }

@@ -5,7 +5,7 @@
   <tr *ngFor="let month of monthArr">
     <td *ngFor="let monthDay of month" [class.booked]="monthDay.booked">
       <span *ngIf="!monthDay.booked">{{monthDay.day}}</span>
-      <a [routerLink]="['/book/edit', monthDay.day]" *ngIf="monthDay.booked">{{monthDay.day}}</a>
+      <a [routerLink]="['/book/edit', monthDay.key]" *ngIf="monthDay.booked">{{monthDay.day}}</a>
     </td>
   </tr>
 

@@ -18,7 +18,7 @@ export class LoginComponent{
   constructor(private af: AngularFire) {
     // TODO: might want this as service
     this.af.auth.subscribe(auth => {
-      console.log(auth);      
+      // console.log(auth);      
       if(auth != null){
         // can't get email perhaps try this https://firebase.google.com/docs/auth/web/manage-users
           this.loginStatus = true;

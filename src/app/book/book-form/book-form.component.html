@@ -1,4 +1,5 @@
 {{diagnostic}}
+
 <form (ngSubmit)="onSubmit()" #bookingForm="ngForm">
 
 <!--type-->
@@ -18,7 +19,7 @@
 
 <!--days-->
   <label for="days">Days</label>
-  <div *ngFor="let date of dates">
+  <div *ngFor="let date of booking.dates">
     {{date.date}}  
     <select name="days" [(ngModel)]="date.slot" required>
         <option *ngFor="let length of lengths" [value]="length">  
