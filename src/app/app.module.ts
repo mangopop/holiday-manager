@@ -13,6 +13,7 @@ import { AppComponent } from './app.component';
 import { HolidayManagerRoutingModule } from './app-routing.module'
 // shared
 import { InfoPanelComponent } from './shared/info-panel/info-panel.component';
+import { ConstantsService } from './shared/constants.service';
 //dashboard
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DashCalComponent } from './dashboard/dash-cal/dash-cal.component';
@@ -50,7 +51,8 @@ const myFirebaseAuthConfig = {
     ApproveComponent,
     CalendarComponent,
     ProfileDetailsComponent,
-    LoginComponent
+    LoginComponent,
+
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),
@@ -62,7 +64,7 @@ const myFirebaseAuthConfig = {
     BookModule,
     HolidayManagerRoutingModule    
   ],
-  providers: [],
+  providers: [ConstantsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

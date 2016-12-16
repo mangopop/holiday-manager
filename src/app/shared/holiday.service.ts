@@ -19,6 +19,8 @@ export class HolidayService {
     // console.log(this.loginStatus.getStatus());
     let status = this.loginStatus.getStatus()
     booking.userId = status.uid;
+    booking.approved = false;
+    booking.rejected = false;
 
     this.holiday.push(booking);
   }

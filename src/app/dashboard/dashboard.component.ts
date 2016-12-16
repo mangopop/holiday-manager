@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 
 import { HolidayService } from '../shared/holiday.service';
 import { LoginStatusService } from '../shared/login-status.service';
+import { ConstantsService } from '../shared/constants.service';
 
 import { FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
 import { Observable } from 'rxjs/Observable';
@@ -18,49 +19,62 @@ import 'rxjs/add/operator/first';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor(public LoginStatus: LoginStatusService, public HolidayService: HolidayService) {
-    this.getLoginStatus();
+  constructor(
+    public LoginStatus: LoginStatusService,
+    public HolidayService: HolidayService,
+    public ConstantsService: ConstantsService,
+    ) {}
+
+  uid: string;
+  constants$: FirebaseListObservable<any>;
+  basic: number;
+  daysLeft: number;
+  daysTaken: number;
+  bookingData$: FirebaseListObservable<any>;
+
+  getContants(){
+    this.constants$ = this.ConstantsService.getConstants();
+    this.constants$.subscribe(data => this.basic = data[0].$value );
   }
 
-
-  daysLeft: any;
-  daysTaken: any;
-  bookingData: FirebaseListObservable<any>;
-  userId;
-  // hols:any = [{daysTaken:7},{daysTaken:7}];
-
   getLoginStatus() {
-    this.userId = this.LoginStatus.getStatus(); //TODO: should wait for this first
+    console.log('call getLoginStatus from dashboard');    
+    // this.userId = this.LoginStatus.getStatus(); //TODO: should wait for this first
+    this.LoginStatus.getAuth().subscribe(auth => {      
+      if (auth != null) {
+        console.log(auth);
+        this.uid = auth.uid;
+        this.getHolidayInfo();
+      } else {
+        console.log('error getting auth');
+      }
+    });
+
   }
 
   getHolidayInfo() {
+    console.log('call getHolidayInfo from dashboard');
+    this.bookingData$ = this.HolidayService.getHolidays(this.uid);
 
-    this.bookingData = this.HolidayService.getAllHolidays();
-    // ERROR: for some reason this log displays accumlating arrays
+    // ERROR: for some reason this log displays accumulating arrays
     // https://github.com/angular/angularfire2/blob/master/docs/4-querying-lists.md
     // https://github.com/angular/angularfire2/issues/574
 
-    this.bookingData.first().subscribe(data => { //array of matching bookings for user
+    //array of matching bookings for user      
+    this.bookingData$.first().subscribe(data => {
+      // panel
+      this.daysTaken = data.reduce((pre, cur) => pre + cur.daysTaken,0);
+      this.daysLeft = this.basic - this.daysTaken;
+    });
 
       //   next: x => console.log("got daysLeft '%x'", x),
       //   error: err => console.error('something wrong occurred: ' + err),
       //   complete: () => console.log('done'),
-
-      // daysleft panel
-      this.daysTaken = data.reduce((pre, cur, currentIndex, array) => { //for each booking
-        return pre.daysTaken + cur.daysTaken
-      });
-
-      // daysTaken panel
-      // this.daysLeft = data.reduce((pre, cur, currentIndex, array) => { //for each booking
-      //   return pre.daysTaken + cur.daysTaken
-      // });
-
-    });
   }
 
   ngOnInit() {
-    this.getHolidayInfo();
+    this.getContants();
+    this.getLoginStatus();
   }
 
   ngOnDestroy(){
