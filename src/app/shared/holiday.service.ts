@@ -38,4 +38,8 @@ export class HolidayService {
     );
   }
 
+  getAllHolidays() {
+    return this.af.database.list('Holiday');
+  }
+
 }
