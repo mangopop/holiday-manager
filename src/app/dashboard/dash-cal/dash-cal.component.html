@@ -3,7 +3,8 @@
     <th width='30' *ngFor="let day of daysOfWeekTH">{{day[0] | uppercase}}</th>
   </tr>
   <tr *ngFor="let month of monthArr">
-    <td *ngFor="let monthDay of month" [class.booked]="monthDay.booked">
+    <td *ngFor="let monthDay of month" 
+    [ngClass]="{'booked': monthDay.approved, 'pending': monthDay.booked && !monthDay.approved}">
       <span *ngIf="!monthDay.booked">{{monthDay.day}}</span>
       <a [routerLink]="['/book/edit', monthDay.key]" *ngIf="monthDay.booked">{{monthDay.day}}</a>
     </td>

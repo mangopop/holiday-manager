@@ -30,6 +30,7 @@ export class DashCalComponent implements OnInit {
       const nestedDates = data.map(obj => obj.dates.map(dates => {
         return {
           date: dates.date,
+          approved: obj.approved,
           key: obj.$key,
         }
       }));
@@ -84,7 +85,7 @@ export class DashCalComponent implements OnInit {
                 if (parseInt(splitDate[0]) === i) {
                   // console.log('day matched');   
                   // we've found a match for this date, set booked and key                 
-                  monthDayArr.push({ day: i, booked: true, key:dateObj.key });
+                  monthDayArr.push({ day: i, booked: true, approved:dateObj.approved, key:dateObj.key });
                   // set for default-to-false skipping
                   match = true;
                 }
