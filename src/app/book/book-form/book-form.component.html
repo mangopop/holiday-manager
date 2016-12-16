@@ -20,12 +20,18 @@
 <!--days-->
   <label for="days">Days</label>
   <div *ngFor="let date of booking.dates">
-    {{date.date}}  
+    {{date.date}}
+
+    <!--new-->
+    <!--<select *ngIf="true" name="days" [(ngModel)]="date.slot" required>
+        <option *ngFor="let length of lengthsObj">{{length.slot}}</option>
+    </select>-->
+
+    <!--edit-->
     <select name="days" [(ngModel)]="date.slot" required>
-        <option *ngFor="let length of lengths" [value]="length">  
-          {{length}}
-        </option>
+        <option *ngFor="let length of lengthsObj" [ngValue]="length.slot">{{length.slot}}</option>
     </select>
+
   </div>
 
   <button type="submit" class="button" [disabled]="!bookingForm.form.valid">Submit</button>

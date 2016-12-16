@@ -7,6 +7,7 @@ import { LoginStatusService } from '../../shared/login-status.service';
 
 import { FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
 import { Observable } from 'rxjs/Observable'
+import 'rxjs/add/operator/first';
 
 import * as moment from 'moment';
 // declare var moment: any;
@@ -27,6 +28,18 @@ export class BookFormComponent implements OnInit {
 
   // we can fill in all values, or none. But then the form thinks it is filled in
   public booking = new Holiday();
+  // booking = {
+  //   userId: '',
+  //   type: 'Sick',
+  //   dates: [
+  //     { date: '2016-12-01', slot: 'Morning' },
+  //     { date: '2016-12-02', slot: 'Morning' },
+  //     { date: '2016-12-05', slot: 'Afternoon' }
+  //   ],
+  //   daysTaken: 3,
+  //   fromDate: '2016-01-01',
+  //   toDate: '2016-01-05'
+  // }
 
   public types = [
     'Paid',
@@ -35,10 +48,10 @@ export class BookFormComponent implements OnInit {
     'Sick'
   ];
 
-  public lengths = [
-    'Full',
-    'Morning',
-    'Afternoon',
+  public lengthsObj = [
+    { slot: 'Afternoon' },
+    { slot: 'Full' },
+    { slot: 'Morning' }
   ];
 
   enumerateDaysBetweenDates(startDate, endDate) {
@@ -79,31 +92,19 @@ export class BookFormComponent implements OnInit {
       console.log(id);
 
       if (id) {
+
         const userId = this.LoginStatus.getStatus();
-        const bookingData = this.HolidayService.getHolidays(userId.uid);
+        console.log(userId);
         
+        const bookingData = this.HolidayService.getHolidays(userId.uid);
+
         // this will return multiple bookings
-        bookingData.subscribe(data => {
+        bookingData.first().subscribe(data => {
           console.log(data);
-
           // filter out single booking using key
-
-          const book = data.filter( obj => obj.$key === id);
+          const book = data.filter(obj => obj.$key === id);
           console.log(book);
           this.booking = book[0];
-          
-          // this.booking = {
-          //   userId: '',
-          //   type: 'Paid',
-          //   dates: [
-          //     { date: '2016-12-01', slot: 'Full' },
-          //     { date: '2016-12-02', slot: 'Full' },
-          //     { date: '2016-12-05', slot: 'Full' }
-          //   ],
-          //   daysTaken: 3,
-          //   fromDate: '2016-01-01',
-          //   toDate: '2016-01-05'
-          // }
 
         });
       }
