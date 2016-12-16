@@ -30,9 +30,10 @@ export class DashboardComponent implements OnInit {
   basic: number;
   daysLeft: number;
   daysTaken: number;
+  daysPending: number;
   bookingData$: FirebaseListObservable<any>;
 
-  getContants(){
+  getConstants(){
     this.constants$ = this.ConstantsService.getConstants();
     this.constants$.subscribe(data => this.basic = data[0].$value );
   }
@@ -49,7 +50,6 @@ export class DashboardComponent implements OnInit {
         console.log('error getting auth');
       }
     });
-
   }
 
   getHolidayInfo() {
@@ -62,9 +62,11 @@ export class DashboardComponent implements OnInit {
 
     //array of matching bookings for user      
     this.bookingData$.first().subscribe(data => {
-      // panel
-      this.daysTaken = data.reduce((pre, cur) => pre + cur.daysTaken,0);
+      // approved panel hols      
+      this.daysTaken = data.filter(hol => hol.approved).reduce((pre, cur) => pre + cur.daysTaken,0);  
       this.daysLeft = this.basic - this.daysTaken;
+      //  pending panel hols
+      this.daysPending = data.filter(hol => !hol.approved).reduce((pre, cur) => pre + cur.daysTaken,0);
     });
 
       //   next: x => console.log("got daysLeft '%x'", x),
@@ -73,7 +75,7 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getContants();
+    this.getConstants();
     this.getLoginStatus();
   }
 
