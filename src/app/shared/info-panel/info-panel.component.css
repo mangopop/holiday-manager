@@ -1,0 +1,19 @@
+.panel{
+    padding: 1em;
+    width:150px;
+    height:150px;
+    background-color: red;
+    float:left;
+    color:white;
+    margin:1em; 
+    text-align: center;
+}
+
+.value{
+    font-size: 3em;
+
+}
+
+.title{
+    font-size: 1em;
+}
