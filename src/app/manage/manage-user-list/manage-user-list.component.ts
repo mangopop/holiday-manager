@@ -14,6 +14,12 @@ export class ManageUserListComponent{
   @Output() onSelectUser: EventEmitter<User> = new EventEmitter<User>();
   @Output() onDeleteUser: EventEmitter<User> = new EventEmitter<User>();
 
+  newUser() {
+    // this.form = true;
+    // this.new = true;
+    // this.reset();
+  }
+
   selectUser(user: User) {
       this.onSelectUser.emit(user);
   }
