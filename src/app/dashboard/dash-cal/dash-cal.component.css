@@ -2,7 +2,18 @@
     line-height:1em;
 }
 
+.cal-table td a {
+    /*padding: .5em;
+    display:block;
+    width:10px;
+    height:10px;*/
+}
+
 .booked{
-    background-color: limegreen;
-    color: white;
+    background-color: limegreen;    
+}
+
+.booked:hover{
+    background-color: limegreen;    
+    box-shadow: inset 0 0 0 2px rgba(0,0,0,.5);
 }
