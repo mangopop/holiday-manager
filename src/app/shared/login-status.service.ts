@@ -13,9 +13,10 @@ export class LoginStatusService {
   };
 
   getStatus() {
-
-    this.af.auth.subscribe(auth => {
+    
+    this.af.auth.subscribe(auth => {      
       if (auth != null) {
+        // console.log(auth);
         // can't get email perhaps try this https://firebase.google.com/docs/auth/web/manage-users
         this.status = {
           loginStatus: true,
@@ -23,6 +24,7 @@ export class LoginStatusService {
           uid: auth.auth.uid,
         };
       } else {
+        // console.log(auth);
         this.status = {
           loginStatus: false,
           email: null,
