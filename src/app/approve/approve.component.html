@@ -1,3 +1,25 @@
-<p>
-  approve works!
-</p>
+<!-- going to have to add some -->
+
+<table>
+  <tbody>
+    <tr>
+      <th>name</th>
+      <th>from date</th>
+      <th>to date</th>
+      <th>type</th>
+      <th>status</th>
+      <th>comments</th>
+      <th>approve/reject</th>
+    </tr>
+    <tr *ngFor="let item of holidays$ | async">
+      <td>{{item.name}}</td>
+      <td>{{item.fromDate}}</td>
+      <td>{{item.toDate}}</td>      
+      <td>{{item.type}}</td>
+      <td>{{item.status}}</td>
+      <td>{{item.comments}}</td>
+      <td><a (click)=approve(item)>Appprove</a> / <a (click)=reject(item)>Reject</a></td>      
+      
+    </tr>
+  </tbody>
+</table>

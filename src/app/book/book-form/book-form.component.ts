@@ -78,6 +78,7 @@ export class BookFormComponent implements OnInit {
 
   onSubmit() {
     console.log('submit');
+    this.booking.status = 'pending'; 
     this.HolidayService.addHoliday(this.booking);
   }
 

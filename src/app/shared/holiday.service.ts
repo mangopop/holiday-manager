@@ -13,12 +13,20 @@ export class HolidayService {
   // holiday: FirebaseListObservable<any[]>;
   holiday: FirebaseListObservable<any[]> = this.af.database.list('Holiday');
 
+
+  updateHoliday(booking,status){
+    console.log({status:booking.status});    
+    console.log(booking.$key);    
+    this.holiday.update(booking.$key,{status:status});
+  }
+
   addHoliday(booking) {
     // console.log('adding holiday');
     // console.log(booking);
     // console.log(this.loginStatus.getStatus());
     let status = this.loginStatus.getStatus()
     booking.userId = status.uid;
+    booking.key = booking.key;
     booking.approved = false;
     booking.rejected = false;
 
