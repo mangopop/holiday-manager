@@ -86,6 +86,7 @@ export class UserListService {
     // console.log(user);    
     const item = this.af.database.list('User');
     item.push(user);
+    this.af.auth.createUser({ email:user.email, password:user.password }).then((user) => console.log(`Create User Success:`, user))
   }
 
   updateUser(key,user){

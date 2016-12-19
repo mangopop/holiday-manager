@@ -11,10 +11,7 @@ export class UserFormComponent{
 
   constructor(public userList: UserListService) { }
 
-  user:User = {
-    firstname:'',
-    surname:''
-  }
+  user = new User();
   
   submitted = false;
 
@@ -23,10 +20,7 @@ export class UserFormComponent{
   }
 
   reset(){ 
-    this.user = {
-      firstname:'',
-      surname:''
-    } 
+    this.user = new User();
   }
 
   // TODO: Remove this when we're done

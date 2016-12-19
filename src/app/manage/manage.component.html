@@ -1,14 +1,25 @@
 <h3>Manage Users</h3>
 
+<p><a (click)="onNewUser()">New user</a></p>
+
 <!--search comp-->
 <app-search></app-search>
 <div class="row">
     <!--list users comp-->
     <div class="small-12 medium-6 columns">
-        <app-manage-user-list [users]="users" (onSelectUser)="onSelectUser($event)" (onDeleteUser)="onDeleteUser($event)"></app-manage-user-list>
+        <app-manage-user-list 
+        [users]="users"
+        (onSelectUser)="onSelectUser($event)"
+        (onDeleteUser)="onDeleteUser($event)">
+        </app-manage-user-list>
     </div>
     <!--display user comp-->
     <div class="small-12 medium-6 columns">
-        <router-outlet></router-outlet>
+        <app-manage-user-details 
+        [user]="user"
+        [newUser]="newUser"
+        (onSaveUser)="onSaveUser($event)"
+        (onUpdateUser)="onUpdateUser($event)">
+        </app-manage-user-details>
     </div>
 </div>

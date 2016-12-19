@@ -20,17 +20,26 @@
     <label for="surname">Surname</label>
     <input type="text" id="surname" name="surname" [(ngModel)]="user.surname" required>
 
+    <label for="email">email</label>
+    <input type="email" id="email" name="email" [(ngModel)]="user.email">
+
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" [(ngModel)]="user.password">
+
+    <label for="password2">Retype Password</label>
+    <input type="password" id="password2" name="password2" [(ngModel)]="user.password2">
+    <p class="alert-box alert">{{message}}</p>
+
     <label for="manager">Manager</label>
     <input type="checkbox" id="manager" name="manager" [(ngModel)]="user.manager">
 
     <br>
 
-    <button type="submit" class="button" [disabled]="!userForm.form.valid">
+    <button *ngIf="newUser" type="submit" class="button" [disabled]="!userForm.form.valid">
         <span>Submit</span>
-        <!--<span *ngIf="!new">Update</span>-->
     </button>
 
     <button type="button" class="button" (click)="reset()">Reset</button>
 </form>
 
-<button *ngIf="!new" class="button" [disabled]="!userForm.form.valid" (click)="updateUser()">Update</button>
+<button *ngIf="!newUser" class="button" [disabled]="!userForm.form.valid" (click)="updateUser()">Update</button>

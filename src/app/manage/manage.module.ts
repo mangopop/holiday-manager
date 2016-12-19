@@ -4,9 +4,9 @@ import { FormsModule }    from '@angular/forms';
 //routing
 import { ManageRoutingModule } from './manage-routing.module'
 //components
-import { ManageUserListComponent }    from './manage-user-list/manage-user-list.component';
 import { ManageComponent }  from './manage.component';
 import { SearchComponent } from '../shared/search/search.component';
+import { ManageUserListComponent }    from './manage-user-list/manage-user-list.component';
 import { ManageUserDetailsComponent } from './manage-user-details/manage-user-details.component';
 
 import { UserListService } from '../shared/user-list.service';

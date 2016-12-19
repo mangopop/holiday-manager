@@ -3,11 +3,11 @@
 
 
 <form *ngIf="!loginStatus" (ngSubmit)="onSubmit()" #loginForm="ngForm">
-    <label for="name">email</label>
-    <input type="email" id="email" [(ngModel)]="login.email" name="email" required>
+    <label for="loginEmail">email</label>
+    <input type="loginEmail" id="loginEmail" [(ngModel)]="login.loginEmail" name="loginEmail" required>
 
     <label for="alterEgo">password</label>
-    <input type="password" id="password" name="password" [(ngModel)]="login.password" required>
+    <input type="loginPassword" id="loginPassword" name="loginPassword" [(ngModel)]="login.loginPassword" required>
 
     <button type="submit" class="button" [disabled]="!loginForm.form.valid">Submit</button>
 
