@@ -30,11 +30,11 @@ export class ManageUserDetailsComponent implements OnInit {
   new = false;
   submitted = false;
 
-  newUser() {
-    this.form = true;
-    this.new = true;
-    this.reset();
-  }
+  // newUser() {
+  //   this.form = true;
+  //   this.new = true;
+  //   this.reset();
+  // }
 
   onSubmit() {
     this.UserListService$.addUser(this.user);
@@ -76,6 +76,8 @@ export class ManageUserDetailsComponent implements OnInit {
       this.userData = this.UserListService$.getUser(id);
 
       this.userData.subscribe(queriedItems => {
+        console.log(queriedItems);
+        
         if (!queriedItems) {
           this.reset();
         } else {

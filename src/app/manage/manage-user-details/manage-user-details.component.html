@@ -1,5 +1,3 @@
-
-
 <!--<a (click)="newUser()">New user</a>-->
 <!--<ul>
     <li>Username: {{ (user | async)?.firstname }}</li>
@@ -14,27 +12,25 @@
 
 {{diagnostic}}
 <form (ngSubmit)="onSubmit()" #userForm="ngForm">
-    
+
     <label for="firstname">Firstname</label>
-    <input type="text" 
-      id="firstname"
-      [(ngModel)]="user.firstname" 
-      name="firstname"
-     required #spy >
-     {{spy.firstname}}
-     {{spy.className}}
+    <input type="text" id="firstname" [(ngModel)]="user.firstname" name="firstname" required #spy> 
+    <!--{{spy.firstname}} {{spy.className}}-->
 
     <label for="surname">Surname</label>
-    <input type="text" id="surname" name="surname"
-    [(ngModel)]="user.surname"
-    required>
+    <input type="text" id="surname" name="surname" [(ngModel)]="user.surname" required>
+
+    <label for="manager">Manager</label>
+    <input type="checkbox" id="manager" name="manager" [(ngModel)]="user.manager">
+
+    <br>
 
     <button type="submit" class="button" [disabled]="!userForm.form.valid">
         <span>Submit</span>
         <!--<span *ngIf="!new">Update</span>-->
-        </button>
-    
+    </button>
+
     <button type="button" class="button" (click)="reset()">Reset</button>
-  </form>
-  
-  <button *ngIf="!new" class="button" [disabled]="!userForm.form.valid" (click)="updateUser()">Update</button>
+</form>
+
+<button *ngIf="!new" class="button" [disabled]="!userForm.form.valid" (click)="updateUser()">Update</button>
