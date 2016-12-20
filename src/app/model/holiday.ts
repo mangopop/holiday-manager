@@ -9,7 +9,7 @@ export class Holiday{
     toDate:string;
     status:string;
     comment?:string;
-    key:string;
+    key?:string;
 }
 
 // export enum type {

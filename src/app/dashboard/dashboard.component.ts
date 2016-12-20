@@ -35,7 +35,10 @@ export class DashboardComponent implements OnInit {
 
   getConstants(){
     this.constants$ = this.ConstantsService.getConstants();
-    this.constants$.subscribe(data => this.basic = data[0].$value );
+    let sub = this.constants$.subscribe(data => {
+      this.basic = data[0].$value
+      sub.unsubscribe(); 
+    });
   }
 
   getLoginStatus() {
@@ -61,17 +64,15 @@ export class DashboardComponent implements OnInit {
     // https://github.com/angular/angularfire2/issues/574
 
     //array of matching bookings for user      
-    this.bookingData$.first().subscribe(data => {
+    let sub = this.bookingData$.subscribe(data => {    
       // approved panel hols      
-      this.daysTaken = data.filter(hol => hol.approved).reduce((pre, cur) => pre + cur.daysTaken,0);  
+      this.daysTaken = data.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken,0);  
+      
       this.daysLeft = this.basic - this.daysTaken;
       //  pending panel hols
-      this.daysPending = data.filter(hol => !hol.approved).reduce((pre, cur) => pre + cur.daysTaken,0);
+      this.daysPending = data.filter(hol => hol.status === 'pending').reduce((pre, cur) => pre + cur.daysTaken,0);
+      sub.unsubscribe();
     });
-
-      //   next: x => console.log("got daysLeft '%x'", x),
-      //   error: err => console.error('something wrong occurred: ' + err),
-      //   complete: () => console.log('done'),
   }
 
   ngOnInit() {

@@ -25,7 +25,8 @@ export class BookFormComponent implements OnInit {
   // dates = [moment('D/M/YYYY'),moment('D/M/YYYY').add(1,'days')];
   // dates: string[];
   dayDiff: number;
-
+  message: string;
+  ok2book: boolean = true;
   // we can fill in all values, or none. But then the form thinks it is filled in
   public booking = new Holiday();
   // booking = {
@@ -69,16 +70,47 @@ export class BookFormComponent implements OnInit {
   };
 
   //get each date selected and then make this appear in select input loop! 
-  updateRange() {
-    this.booking.daysTaken = moment(this.booking.fromDate).diff(moment(this.booking.toDate), 'days');
+  updateRange(range) {
+    this.ok2book = true;
+    var fromDate = moment(this.booking.fromDate);
+    var toDate = moment(this.booking.toDate);
+
+    // this.booking.daysTaken = fromDate.diff(toDate, 'days'); //still counts weekends
+    // this.booking.daysTaken = Math.abs(this.booking.daysTaken) + 1;
+
     //for each week day, add to array
     this.booking.dates = this.enumerateDaysBetweenDates(moment(this.booking.fromDate), moment(this.booking.toDate));
-    // this.booking.dates = this.dates;
+
+    if (fromDate.isSame(toDate)) {
+      this.booking.daysTaken = 1;
+    }else{
+      this.booking.daysTaken = this.booking.dates.length;
+    }
+
+    // this.HolidayService.getAllHolidays();
+    let sub = this.HolidayService.getAllHolidays().subscribe(data => {
+      let compareFromDate =fromDate;
+      let compareToDate = toDate;
+      data.forEach(element => {
+        let fromDate2 = moment(element.fromDate2).subtract(1, 'days');
+        let toDate2 = moment(element.toDate2).add(1, 'days');
+
+        // if we find any dates bookHol is turned on
+        if (compareToDate.isBetween(fromDate2, toDate2) || compareFromDate.isBetween(fromDate2, toDate2)) {
+          this.ok2book = false;
+        }
+      });
+
+      sub.unsubscribe();
+    });
+
+
   }
 
   onSubmit() {
     console.log('submit');
-    this.booking.status = 'pending'; 
+    // this.ok2book = this.HolidayService.checkAvailability(this.booking,range);
+    this.booking.status = 'pending';
     this.HolidayService.addHoliday(this.booking);
   }
 
@@ -96,11 +128,11 @@ export class BookFormComponent implements OnInit {
 
         const userId = this.LoginStatus.getStatus();
         console.log(userId);
-        
+
         const bookingData = this.HolidayService.getHolidays(userId.uid);
 
         // this will return multiple bookings
-        bookingData.first().subscribe(data => {
+        bookingData.subscribe(data => {
           console.log(data);
           // filter out single booking using key
           const book = data.filter(obj => obj.$key === id);

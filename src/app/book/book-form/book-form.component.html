@@ -1,5 +1,7 @@
 {{diagnostic}}
 
+<div *ngIf="!ok2book" class="alert-box warning">Booking conflict</div>
+
 <form (ngSubmit)="onSubmit()" #bookingForm="ngForm">
 
 <!--type-->
@@ -13,9 +15,9 @@
 
 <!--date ranges-->
   <label for="fromDate">fromDate</label>
-  <input type="date" name="fromDate" id="fromDate" (change)="updateRange()" [(ngModel)]="booking.fromDate" required>
+  <input type="date" name="fromDate" id="fromDate" (change)="updateRange('from')" [(ngModel)]="booking.fromDate" required>
   <label for="toDate">toDate</label>
-  <input type="date" name="toDate" id="toDate" (change)="updateRange()" [(ngModel)]="booking.toDate" required>
+  <input type="date" name="toDate" id="toDate" (change)="updateRange('to')" [(ngModel)]="booking.toDate" required>
 
 <!--days-->
   <label for="days">Days</label>
@@ -34,8 +36,11 @@
 
   </div>
 
-  <button type="submit" class="button" [disabled]="!bookingForm.form.valid">Submit</button>
+  <button type="submit" class="button" [disabled]="!bookingForm.form.valid || !ok2book">Submit</button>
 </form>
+
+{{message}}
+
 
 
 
