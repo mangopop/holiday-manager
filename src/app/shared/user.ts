@@ -4,6 +4,7 @@ export class User {
   surname: string;
   email: string;
   password?: string;
+  xhol:number;
   $key?: string;
   $value?: string;
   $exists?: string;
