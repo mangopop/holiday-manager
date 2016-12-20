@@ -122,7 +122,7 @@ export class BookFormComponent implements OnInit {
     this.route.params.subscribe((params: Params) => {
       // let id = +params['id']; // (+) converts string 'id' to a number
       let id = params['id'];
-      console.log(id);
+      // console.log(id);
 
       if (id) {
 
