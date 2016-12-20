@@ -1,1 +1,9 @@
-<p>Username: {{ (user | async)?.name }}</p>
+<!--<p>{{ user | async | json }}</p>-->
+
+<!--<p>Username: {{ (user | async)?.firstname }}</p>-->
+<!--http://stackoverflow.com/questions/35534959/access-key-and-value-of-object-using-ngfor-->
+<ul *ngFor="let item of user | async">
+    <li >firstname: {{item.firstname}}</li>
+    <li >surname: {{item.surname}}</li>
+    <li >email: {{item.email}}</li>
+</ul>

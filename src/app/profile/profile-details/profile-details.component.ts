@@ -12,6 +12,8 @@ export class ProfileDetailsComponent implements OnInit {
   @Input() user;
 
   ngOnInit() {
+    console.log(this.user);
+    
   }
 
 }

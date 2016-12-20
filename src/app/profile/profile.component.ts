@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { UserListService } from '../shared/user-list.service';
-import {Router, ActivatedRoute, Params} from '@angular/router';
+import { LoginStatusService } from '../shared/login-status.service';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -10,16 +11,33 @@ import {Router, ActivatedRoute, Params} from '@angular/router';
 })
 export class ProfileComponent implements OnInit {
 
-  public user:Observable<any>;
-  public id: number;
+  public user$: Observable<any>;
+  public userData;
+  // NOTE: COULD WE USE LOGIN SERVICE IN THE USER SERVICE TO GET THE ID?
+  // WE COULD ALSO TAKE ADVANTAGE OF PASSING MORE DATA DOWN FROM PARENT IE LOGIN STATUS
 
-  constructor(private userList$: UserListService, private route: ActivatedRoute) {  }
+
+  constructor(
+    private userList$: UserListService,
+    private LoginStatus$: LoginStatusService,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit() {
-    this.route.params.forEach((params: Params) => {
-      let id = +params['id']; // (+) converts string 'id' to a number
-      this.user = this.userList$.getUser(id);
+
+    // const userId = this.LoginStatus$.getStatus();
+    // console.log(userId);
+
+    // we don't get user by login id! we have to get by key!
+    this.LoginStatus$.getAuth().subscribe(data => {
+      console.log(data);
+      this.user$ = this.userList$.getUserByEmail('simon@nitritex.com');
     });
+
+    // this.route.params.forEach((params: Params) => {
+    //   let id = +params['id']; // (+) converts string 'id' to a number
+    //   this.user = this.userList$.getUser(id);
+    // });
   }
 
 }
