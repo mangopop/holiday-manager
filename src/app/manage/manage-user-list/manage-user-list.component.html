@@ -1,4 +1,4 @@
-<a (click)="newUser()" routerLink="/manage/user/new">New user</a>
+<!--<a (click)="newUser()" routerLink="/manage/user/new">New user</a>-->
 <ul>
   <li *ngFor="let user of users  | async" (click)="selectUser(user)">{{user.firstname}} : <a (click)="deleteUser(user)">delete</a></li>
 </ul>

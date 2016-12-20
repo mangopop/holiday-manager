@@ -14,21 +14,32 @@
 <form (ngSubmit)="onSubmit()" #userForm="ngForm">
 
     <label for="firstname">Firstname</label>
-    <input type="text" id="firstname" [(ngModel)]="user.firstname" name="firstname" required #spy> 
+    <input type="text" id="firstname" [(ngModel)]="user.firstname" name="firstname" required #spy>
     <!--{{spy.firstname}} {{spy.className}}-->
 
     <label for="surname">Surname</label>
     <input type="text" id="surname" name="surname" [(ngModel)]="user.surname" required>
 
-    <label for="email">email</label>
-    <input type="email" id="email" name="email" [(ngModel)]="user.email">
+    <div *ngIf="newUser">
 
-    <label for="password">Password</label>
-    <input type="password" id="password" name="password" [(ngModel)]="user.password">
+        <label for="email">email</label>
+        <input type="email" id="email" name="email" [(ngModel)]="user.email">
 
-    <label for="password2">Retype Password</label>
-    <input type="password" id="password2" name="password2" [(ngModel)]="user.password2">
-    <p class="alert-box alert">{{message}}</p>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" [(ngModel)]="user.password">
+
+        <label for="password2">Retype Password</label>
+        <input type="password" id="password2" name="password2" [(ngModel)]="user.password2">
+        <p class="alert-box alert">{{message}}</p>
+
+    </div>
+
+    <div *ngIf="!newUser">
+
+        <label for="xhol">Extra holiday</label>
+        <input type="number" id="xhol" name="xhol" [(ngModel)]="user.xhol">
+
+    </div>
 
     <label for="manager">Manager</label>
     <input type="checkbox" id="manager" name="manager" [(ngModel)]="user.manager">

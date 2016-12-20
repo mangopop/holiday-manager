@@ -22,6 +22,7 @@ export class ManageComponent {
 
   onNewUser() {
     this.user = new User();
+    this.newUser = true;
   }
 
   //should listen emitted event, Output is on element
