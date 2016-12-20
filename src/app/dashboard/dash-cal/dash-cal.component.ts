@@ -19,12 +19,12 @@ export class DashCalComponent implements OnInit {
   months: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   daysOfWeek: string[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   dates: any[];
-
+  holidayDataSub;
 
   //get holidays
   getHols() {
     const holidayData: FirebaseListObservable<any[]> = this.HolidayService.getHolidays(this.LoginStatus.getStatus().uid);
-    holidayData.subscribe(data => {
+    this.holidayDataSub = holidayData.subscribe(data => {
 
       //go through each booking and gather 'dates' into a clean date array
       const nestedDates = data.map(obj => obj.dates.map(dates => {
@@ -121,7 +121,10 @@ export class DashCalComponent implements OnInit {
   ngOnInit() {
     this.getHols();
     // this.createCal();
+  }
 
+  ngOnDestroy(){
+    this.holidayDataSub.unsubscribe();
   }
 
 }

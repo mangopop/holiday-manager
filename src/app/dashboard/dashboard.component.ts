@@ -32,12 +32,13 @@ export class DashboardComponent implements OnInit {
   daysTaken: number;
   daysPending: number;
   bookingData$: FirebaseListObservable<any>;
+  bookingDataSub;
+  constantsSub;
 
   getConstants(){
     this.constants$ = this.ConstantsService.getConstants();
-    let sub = this.constants$.subscribe(data => {
-      this.basic = data[0].$value
-      sub.unsubscribe(); 
+    this.constantsSub = this.constants$.subscribe(data => {
+      this.basic = data[0].$value;
     });
   }
 
@@ -64,15 +65,17 @@ export class DashboardComponent implements OnInit {
     // https://github.com/angular/angularfire2/issues/574
 
     //array of matching bookings for user      
-    let sub = this.bookingData$.subscribe(data => {    
-      // approved panel hols      
-      this.daysTaken = data.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken,0);  
+    this.bookingDataSub = this.bookingData$.subscribe(data => {    
+      console.log(data);
       
+      // approved panel hols      
+      this.daysTaken = data.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken,0);      
       this.daysLeft = this.basic - this.daysTaken;
       //  pending panel hols
       this.daysPending = data.filter(hol => hol.status === 'pending').reduce((pre, cur) => pre + cur.daysTaken,0);
-      sub.unsubscribe();
+      // bookingDataSub.unsubscribe();
     });
+
   }
 
   ngOnInit() {
@@ -81,7 +84,8 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnDestroy(){
-    // this.bookingData.unsubscribe();
+    this.bookingDataSub.unsubscribe();
+    this.constantsSub.unsubscribe();
   }
 
 }
