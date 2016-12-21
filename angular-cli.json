@@ -18,7 +18,9 @@
         "../node_modules/foundation-sites/dist/foundation-flex.css",
         "styles.scss"
       ],
-      "scripts": [],
+      "scripts": [
+        "../node_modules/lodash/lodash.js"
+      ],
       "environments": {
         "source": "environments/environment.ts",
         "dev": "environments/environment.ts",

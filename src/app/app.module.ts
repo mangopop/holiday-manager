@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { JsonpModule } from '@angular/http';
 import { RouterModule }   from '@angular/router';
 import { ManageModule } from './manage/manage.module';
 import { BookModule } from './book/book.module';
@@ -60,6 +61,7 @@ const myFirebaseAuthConfig = {
     FormsModule,
     ReactiveFormsModule,
     HttpModule,
+    JsonpModule,
     ManageModule,
     BookModule,
     HolidayManagerRoutingModule    

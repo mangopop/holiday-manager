@@ -2,12 +2,12 @@
     line-height:1em;
 }
 
-.cal-table td a {
-    /*padding: .5em;
+/*.cal-table td a {
+    padding: .5em;
     display:block;
     width:10px;
-    height:10px;*/
-}
+    height:10px;
+}*/
 
 .booked{
     background-color: limegreen;    
@@ -19,6 +19,10 @@
 
 .rejected{
     background-color: red;    
+}
+
+.bankHol{
+    background-color: deepskyblue;    
 }
 
 .booked:hover{

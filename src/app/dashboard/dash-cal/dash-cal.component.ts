@@ -1,18 +1,58 @@
 import { Component, OnInit } from '@angular/core';
 import { HolidayService } from '../../shared/holiday.service';
 import { LoginStatusService } from '../../shared/login-status.service';
+import { PublicHolService } from '../public-hol.service';
 import { FirebaseListObservable } from 'angularfire2';
 import * as moment from 'moment';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-dash-cal',
   templateUrl: './dash-cal.component.html',
-  styleUrls: ['./dash-cal.component.css']
+  styleUrls: ['./dash-cal.component.css'],
+  providers: [PublicHolService]
 })
 export class DashCalComponent implements OnInit {
 
-  constructor(public LoginStatus: LoginStatusService, public HolidayService: HolidayService) { }
+  //http://kayaposoft.com/enrico/json/v1.0/?action=getPublicHolidaysForMonth&month=1&year=2016&country=eng
+  //http://kayaposoft.com/enrico/json/v1.0/?action=getPublicHolidaysForYear&year=2016&country=eng
+  constructor(public LoginStatus: LoginStatusService, public HolidayService: HolidayService, public PublicHol: PublicHolService) { }
 
+
+  bankHol = [
+    {
+      "date": {
+        "day": 1,
+        "month": 1,
+        "year": 2016,
+        "dayOfWeek": 5
+      },
+      "localName": "New Year's Day",
+      "englishName": "New Year's Day"
+    },
+    {
+      "date": {
+        "day": 7,
+        "month": 1,
+        "year": 2016,
+        "dayOfWeek": 5
+      },
+      "localName": "New Year's Day",
+      "englishName": "New Year's Day"
+    },
+    {
+      "date": {
+        "day": 1,
+        "month": 12,
+        "year": 2016,
+        "dayOfWeek": 5
+      },
+      "localName": "New Year's Day",
+      "englishName": "New Year's Day"
+    }
+  ]
+
+  // bankHol$ = this.PublicHol.getBankHoliday();
   daysOfWeekTH: string[] = [];
   years: string[] = ['2016'];
   monthArr: any[] = [];
@@ -37,39 +77,55 @@ export class DashCalComponent implements OnInit {
       this.dates = nestedDates.reduce((prev, curr) => {
         return prev.concat(curr)
       }, []);
+
       //test
       // this.dates = [
       //   { date: '01-12-2016', key: '-KYKAvI3Bwzly1XBwnxv' },
       //   { date: '04-12-2016', key: '-KYKAvI3Bwzly1XBwnxv' }
       // ];
-      console.log(this.dates);
-      this.createCal();
-    });
 
+      // need to check if this is duplicating an already booked date, adding here assumes its booked, which don't want
+      this.PublicHol.getBankHoliday().subscribe(items => {
+        // THIS SEEMS WRONG TO LOOP AGAIN? BUT THIS IS HOW THE TUTORIAL DOES IT?
+        items.forEach(item => {
+          // if undefined add it
+          if (!_.find(this.dates, ['date', item.date.day + '-' + item.date.month + '-' + item.date.year])) { //element or undefined
+            this.dates.push({ date: item.date.day + '-' + item.date.month + '-' + item.date.year, bankHol: true });
+          }
+        });
+        // console.log(this.dates);
+        this.createCal();
+      });
+    });
   }
 
 
   createCal() {
     this.years.forEach(year => {
 
-
       // var yearDates = this.dates.filter(value => {
       //   return value.indexOf(year) >= 0;
       // })
 
-
       // clear all months each year
-      this.monthArr = [];
+      this.monthArr = []; //array of months 1-12
 
       this.months.forEach(month => {
 
         // clears day each month
-        var monthDayArr: any[] = [];
+        var monthDayArr: any[] = []; //array of days of month 1-31
         var currentDay = moment(year + "-" + month).format("ddd");
         var monthPos = this.daysOfWeek.indexOf(currentDay);
         var monthDays = moment(year + "-" + month).daysInMonth();
 
-        // add days
+        // bank holidays  
+        // var monthAdj = month - 1;
+
+        // if (typeof this.bankHol[monthAdj] != 'undefined') {
+        //   monthDayArr.push({ day: this.bankHol[monthAdj].date.day, booked: false, bankHol: true });
+        // }
+
+        // build monthArr as array of object
         for (var i = 1; i < monthDays + 1; i++) {
           // monthDays is just number we have no date, so could split date and do comparison
 
@@ -84,8 +140,15 @@ export class DashCalComponent implements OnInit {
                 // console.log('month matched');
                 if (parseInt(splitDate[0]) === i) {
                   // console.log('day matched');   
-                  // we've found a match for this date, set booked and key                 
-                  monthDayArr.push({ day: i, booked: true, status:dateObj.status, key:dateObj.key });
+
+                  // we've found a match for this date, set booked and key              
+                  if (!dateObj.bankHol) {
+                    monthDayArr.push({ day: i, booked: true, status: dateObj.status, key: dateObj.key });
+                    // or bank hol
+                  } else {
+                    monthDayArr.push({ day: i, bankHol: true });
+                  }
+
                   // set for default-to-false skipping
                   match = true;
                 }
@@ -95,7 +158,6 @@ export class DashCalComponent implements OnInit {
           if (!match) {
             monthDayArr.push({ day: i, booked: false });
           }
-
         }
 
         // shift days along by day index
@@ -120,10 +182,12 @@ export class DashCalComponent implements OnInit {
 
   ngOnInit() {
     this.getHols();
+    console.log(this.PublicHol.getBankHoliday().subscribe(data => console.log(data)));
+
     // this.createCal();
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.holidayDataSub.unsubscribe();
   }
 

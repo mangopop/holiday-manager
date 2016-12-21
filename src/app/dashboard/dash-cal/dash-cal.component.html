@@ -1,10 +1,13 @@
+
+<p>key blue = bankHol, green = approved, yellow = pending, red = rejected.</p>
+
 <table class="cal-table">
   <tr>
     <th width='30' *ngFor="let day of daysOfWeekTH">{{day[0] | uppercase}}</th>
   </tr>
   <tr *ngFor="let month of monthArr">
     <td *ngFor="let monthDay of month" 
-    [ngClass]="{'booked': monthDay.status == 'approved', 'pending': monthDay.status == 'pending',  'rejected': monthDay.status  === 'rejected'}">
+    [ngClass]="{'booked': monthDay.status == 'approved', 'pending': monthDay.status == 'pending',  'rejected': monthDay.status  === 'rejected', 'bankHol': monthDay.bankHol}">
       <span *ngIf="!monthDay.booked">{{monthDay.day}}</span>
       <a [routerLink]="['/book/edit', monthDay.key]" *ngIf="monthDay.booked">{{monthDay.day}}</a>
     </td>
