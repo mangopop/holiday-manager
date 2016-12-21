@@ -94,14 +94,17 @@ export class BookFormComponent implements OnInit {
   }
 
   getHolidayInfo() {
+    this.bookingData$ = this.HolidayService.getHolidays();
     //array of matching bookings for user      
-    this.bookingDataSub = this.HolidayService.getHolidays().subscribe(data => {
+    this.bookingDataSub = this.bookingData$.subscribe(data => {
       // approved panel hols      
       this.daysTaken = data.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken, 0);
       this.daysLeft = this.basic - this.daysTaken;
       //  pending panel hols
       this.daysPending = data.filter(hol => hol.status === 'pending').reduce((pre, cur) => pre + cur.daysTaken, 0);
+      this.bookingDataSub.unsubscribe();// this stopped the pyramid effect when we couldn't do it onDestory
     });
+
   }
 
   // ----------------- CALCULATE BOOKING ------------------- //
@@ -160,15 +163,20 @@ export class BookFormComponent implements OnInit {
     this.booking.dates = this.enumerateDaysBetweenDates(moment(this.booking.fromDate), moment(this.booking.toDate));
     this.updateDaysTaken();
 
-    this.holidayServiceSub = this.HolidayService.getHolidays().subscribe(data => {
+    this.bookingData$.subscribe(data => {
       let compareFromDate = fromDate;
       let compareToDate = toDate;
       data.forEach(element => {
-        let fromDate2 = moment(element.fromDate2).subtract(1, 'days');
-        let toDate2 = moment(element.toDate2).add(1, 'days');
+        console.log(element);
+        
+        let fromDate2 = moment(element.fromDate).subtract(1, 'days');
+        let toDate2 = moment(element.toDate).add(1, 'days');
 
-        // if we find any dates bookHol is turned on
-        if (compareToDate.isBetween(fromDate2, toDate2) || compareFromDate.isBetween(fromDate2, toDate2)) {
+        // console.log(fromDate2,toDate2,compareFromDate);        
+
+        // if we find any dates bookHol is turned off
+        if (compareFromDate.isBetween(fromDate2, toDate2) || compareToDate.isBetween(fromDate2, toDate2)) {
+          this.message = 'Booking Conflict';
           this.ok2book = false;
         }
 
@@ -193,7 +201,8 @@ export class BookFormComponent implements OnInit {
   get diagnostic() { return JSON.stringify(this.booking); }
 
   ngOnInit() {
-    // this.getLoginStatus();
+    this.getConstants();
+    this.getHolidayInfo();
     // get the id from route params
     this.route.params.subscribe((params: Params) => {
       // let id = +params['id']; // (+) converts string 'id' to a number
@@ -221,8 +230,9 @@ export class BookFormComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    // this.bookingDataSub.unsubscribe();
+
     this.constantsSub.unsubscribe();
-    // this.holidayServiceSub.unsubscribe();
+    this.bookingDataSub.unsubscribe();
+
   }
 }

@@ -1,6 +1,8 @@
 {{diagnostic}}
 
-<div *ngIf="!ok2book" class="alert-box warning">Booking conflict</div>
+<p>days left: {{daysLeft}}</p>
+
+<div *ngIf="!ok2book" class="callout warning">{{message}}</div>
 
 <form (ngSubmit)="onSubmit()" #bookingForm="ngForm">
 
