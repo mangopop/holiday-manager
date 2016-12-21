@@ -3,6 +3,7 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Holiday } from '../../model/holiday';
 // import { Holiday } from '../../model/holiday.interface';
 import { HolidayService } from '../../shared/holiday.service';
+import { ConstantsService } from '../../shared/constants.service';
 import { LoginStatusService } from '../../shared/login-status.service';
 
 import { FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
@@ -20,13 +21,25 @@ import * as moment from 'moment';
 })
 export class BookFormComponent implements OnInit {
 
-  constructor(public LoginStatus: LoginStatusService, public HolidayService: HolidayService, private route: ActivatedRoute, private router: Router) { }
+  constructor(public ConstantsService: ConstantsService, public LoginStatus: LoginStatusService, public HolidayService: HolidayService, private route: ActivatedRoute, private router: Router) { }
 
   // dates = [moment('D/M/YYYY'),moment('D/M/YYYY').add(1,'days')];
   // dates: string[];
   dayDiff: number;
   message: string;
   ok2book: boolean = true;
+
+  uid: string;
+  constants$: FirebaseListObservable<any>;
+  basic: number;
+  daysLeft: number;
+  daysTaken: number;
+  daysPending: number;
+  bookingData$: FirebaseListObservable<any>;
+  bookingDataSub;
+  constantsSub;
+  holidayServiceSub;
+
   // we can fill in all values, or none. But then the form thinks it is filled in
   public booking = new Holiday();
   // booking = {
@@ -69,19 +82,43 @@ export class BookFormComponent implements OnInit {
     return dates;
   };
 
+  // ----------------- GET USER HOLIDAY DATA ------------------- //
+
+  // not returning this in a service is a pain.
+  // we could move this up to app module, then move values down?
+
+  getConstants() {
+    this.constantsSub = this.ConstantsService.getConstants().subscribe(data => {
+      this.basic = data[0].$value;
+    });
+  }
+
+  getHolidayInfo() {
+    //array of matching bookings for user      
+    this.bookingDataSub = this.HolidayService.getHolidays().subscribe(data => {
+      // approved panel hols      
+      this.daysTaken = data.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken, 0);
+      this.daysLeft = this.basic - this.daysTaken;
+      //  pending panel hols
+      this.daysPending = data.filter(hol => hol.status === 'pending').reduce((pre, cur) => pre + cur.daysTaken, 0);
+    });
+  }
+
+  // ----------------- CALCULATE BOOKING ------------------- //
+
   updateDaysTaken() {
 
     var fromDate = moment(this.booking.fromDate);
     var toDate = moment(this.booking.toDate);
     this.booking.daysTaken = 0;
-    
+
     // if Unpaid is not selected calc daysTaken
     if (this.booking.type !== 'Unpaid') {
       // one day selected
       if (fromDate.isSame(toDate)) {
         // check for half day
         console.log(this.booking.dates[0].slot); //this is picking up last data
-        
+
         if (this.booking.dates[0].slot !== 'Full') {
           console.log('add single half day');
           this.booking.daysTaken = .5;
@@ -123,7 +160,7 @@ export class BookFormComponent implements OnInit {
     this.booking.dates = this.enumerateDaysBetweenDates(moment(this.booking.fromDate), moment(this.booking.toDate));
     this.updateDaysTaken();
 
-    let sub = this.HolidayService.getAllHolidays().subscribe(data => {
+    this.holidayServiceSub = this.HolidayService.getHolidays().subscribe(data => {
       let compareFromDate = fromDate;
       let compareToDate = toDate;
       data.forEach(element => {
@@ -134,12 +171,15 @@ export class BookFormComponent implements OnInit {
         if (compareToDate.isBetween(fromDate2, toDate2) || compareFromDate.isBetween(fromDate2, toDate2)) {
           this.ok2book = false;
         }
+
+        // alert and disable button if don't have days left
+        if(this.daysLeft <= 0){
+          this.message = 'You do not have enough holiday';
+          this.ok2book = false;
+        }
+
       });
-
-      sub.unsubscribe();
     });
-
-
   }
 
   onSubmit() {
@@ -153,6 +193,7 @@ export class BookFormComponent implements OnInit {
   get diagnostic() { return JSON.stringify(this.booking); }
 
   ngOnInit() {
+    // this.getLoginStatus();
     // get the id from route params
     this.route.params.subscribe((params: Params) => {
       // let id = +params['id']; // (+) converts string 'id' to a number
@@ -164,7 +205,7 @@ export class BookFormComponent implements OnInit {
         const userId = this.LoginStatus.getStatus();
         console.log(userId);
 
-        const bookingData = this.HolidayService.getHolidays(userId.uid);
+        const bookingData = this.HolidayService.getHolidays();
 
         // this will return multiple bookings
         bookingData.subscribe(data => {
@@ -179,4 +220,9 @@ export class BookFormComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    // this.bookingDataSub.unsubscribe();
+    this.constantsSub.unsubscribe();
+    // this.holidayServiceSub.unsubscribe();
+  }
 }

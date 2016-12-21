@@ -42,23 +42,23 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  getLoginStatus() {
-    console.log('call getLoginStatus from dashboard');    
-    // this.userId = this.LoginStatus.getStatus(); //TODO: should wait for this first
-    this.LoginStatus.getAuth().subscribe(auth => {      
-      if (auth != null) {
-        console.log(auth);
-        this.uid = auth.uid;
-        this.getHolidayInfo();
-      } else {
-        console.log('error getting auth');
-      }
-    });
-  }
+  // getLoginStatus() {
+  //   console.log('call getLoginStatus from dashboard');    
+  //   // this.userId = this.LoginStatus.getStatus(); //TODO: should wait for this first
+  //   this.LoginStatus.getAuth().subscribe(auth => {      
+  //     if (auth != null) {
+  //       console.log(auth);
+  //       this.uid = auth.uid;
+  //       this.getHolidayInfo();
+  //     } else {
+  //       console.log('error getting auth');
+  //     }
+  //   });
+  // }
 
   getHolidayInfo() {
     console.log('call getHolidayInfo from dashboard');
-    this.bookingData$ = this.HolidayService.getHolidays(this.uid);
+    this.bookingData$ = this.HolidayService.getHolidays();
 
     // ERROR: for some reason this log displays accumulating arrays
     // https://github.com/angular/angularfire2/blob/master/docs/4-querying-lists.md
@@ -80,7 +80,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.getConstants();
-    this.getLoginStatus();
+    this.getHolidayInfo();
   }
 
   ngOnDestroy(){

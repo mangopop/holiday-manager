@@ -63,7 +63,7 @@ export class DashCalComponent implements OnInit {
 
   //get holidays
   getHols() {
-    const holidayData: FirebaseListObservable<any[]> = this.HolidayService.getHolidays(this.LoginStatus.getStatus().uid);
+    const holidayData: FirebaseListObservable<any[]> = this.HolidayService.getHolidays();
     this.holidayDataSub = holidayData.subscribe(data => {
 
       //go through each booking and gather 'dates' into a clean date array
