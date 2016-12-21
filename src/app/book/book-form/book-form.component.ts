@@ -81,15 +81,17 @@ export class BookFormComponent implements OnInit {
     //for each week day, add to array
     this.booking.dates = this.enumerateDaysBetweenDates(moment(this.booking.fromDate), moment(this.booking.toDate));
 
-    if (fromDate.isSame(toDate)) {
-      this.booking.daysTaken = 1;
-    }else{
-      this.booking.daysTaken = this.booking.dates.length;
+    // if Unpaid is not selected calc daysTaken
+    if (this.booking.type !== 'Unpaid') {
+      if (fromDate.isSame(toDate)) {
+        this.booking.daysTaken = 1;
+      } else {
+        this.booking.daysTaken = this.booking.dates.length;
+      }
     }
 
-    // this.HolidayService.getAllHolidays();
     let sub = this.HolidayService.getAllHolidays().subscribe(data => {
-      let compareFromDate =fromDate;
+      let compareFromDate = fromDate;
       let compareToDate = toDate;
       data.forEach(element => {
         let fromDate2 = moment(element.fromDate2).subtract(1, 'days');
