@@ -1,6 +1,7 @@
 {{diagnostic}}
 
 <p>days left: {{daysLeft}}</p>
+<p>days taken: {{booking.daysTaken}}</p>
 
 <div *ngIf="!ok2book" class="callout warning">{{message}}</div>
 
@@ -41,10 +42,6 @@
 
   <button type="submit" class="button" [disabled]="!bookingForm.form.valid || !ok2book">Submit</button>
 </form>
-
-{{message}}
-
-
 
 
 <!--<p>from: {{booking.fromDate}}</p>

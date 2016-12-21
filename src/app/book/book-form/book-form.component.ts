@@ -109,16 +109,23 @@ export class BookFormComponent implements OnInit {
 
   // ----------------- CALCULATE BOOKING ------------------- //
 
-  updateDaysTaken() {
+  getSelectedDates() {
+    return {
+      fromDate: moment(this.booking.fromDate),
+      toDate: moment(this.booking.toDate)
+    }
+  }
 
-    var fromDate = moment(this.booking.fromDate);
-    var toDate = moment(this.booking.toDate);
+  updateDaysTaken() {
+    var selectedDates = this.getSelectedDates();
+    // var fromDate = moment(this.booking.fromDate);
+    // var toDate = moment(this.booking.toDate);
     this.booking.daysTaken = 0;
 
     // if Unpaid is not selected calc daysTaken
     if (this.booking.type !== 'Unpaid') {
       // one day selected
-      if (fromDate.isSame(toDate)) {
+      if (selectedDates.fromDate.isSame(selectedDates.toDate)) {
         // check for half day
         console.log(this.booking.dates[0].slot); //this is picking up last data
 
@@ -146,14 +153,11 @@ export class BookFormComponent implements OnInit {
         // this.booking.daysTaken = this.booking.dates.length;
       }
     }
-
+    this.compareDates();
   }
 
   //get each date selected and then make this appear in select input loop! 
   updateRange(range = null) {
-    this.ok2book = true;
-    var fromDate = moment(this.booking.fromDate);
-    var toDate = moment(this.booking.toDate);
     // this.booking.daysTaken = 0;
 
     // this.booking.daysTaken = fromDate.diff(toDate, 'days'); //still counts weekends
@@ -162,13 +166,18 @@ export class BookFormComponent implements OnInit {
     //for each week day, add to array
     this.booking.dates = this.enumerateDaysBetweenDates(moment(this.booking.fromDate), moment(this.booking.toDate));
     this.updateDaysTaken();
+    this.compareDates();
 
+  }
+
+  compareDates() {
+    this.ok2book = true;
+    var selectedDates = this.getSelectedDates();
     this.bookingData$.subscribe(data => {
-      let compareFromDate = fromDate;
-      let compareToDate = toDate;
+      let compareFromDate = selectedDates.fromDate;
+      let compareToDate = selectedDates.toDate;
       data.forEach(element => {
-        console.log(element);
-        
+
         let fromDate2 = moment(element.fromDate).subtract(1, 'days');
         let toDate2 = moment(element.toDate).add(1, 'days');
 
@@ -181,7 +190,7 @@ export class BookFormComponent implements OnInit {
         }
 
         // alert and disable button if don't have days left
-        if(this.daysLeft <= 0){
+        if (this.daysLeft < this.booking.daysTaken) {
           this.message = 'You do not have enough holiday';
           this.ok2book = false;
         }
