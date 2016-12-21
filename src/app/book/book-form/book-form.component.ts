@@ -69,26 +69,59 @@ export class BookFormComponent implements OnInit {
     return dates;
   };
 
+  updateDaysTaken() {
+
+    var fromDate = moment(this.booking.fromDate);
+    var toDate = moment(this.booking.toDate);
+    this.booking.daysTaken = 0;
+    
+    // if Unpaid is not selected calc daysTaken
+    if (this.booking.type !== 'Unpaid') {
+      // one day selected
+      if (fromDate.isSame(toDate)) {
+        // check for half day
+        console.log(this.booking.dates[0].slot); //this is picking up last data
+        
+        if (this.booking.dates[0].slot !== 'Full') {
+          console.log('add single half day');
+          this.booking.daysTaken = .5;
+        } else {
+          console.log('add single day');
+          this.booking.daysTaken = 1;
+        }
+
+        // we have should have a range of more than 1 so we can loop
+      } else {
+        this.booking.dates.forEach(item => {
+          // console.log(item);
+
+          if (item.slot !== 'Full') {
+            console.log('add half day');
+            this.booking.daysTaken += .5;
+          } else {
+            console.log('add day');
+            this.booking.daysTaken++;
+          }
+        });
+        // this.booking.daysTaken = this.booking.dates.length;
+      }
+    }
+
+  }
+
   //get each date selected and then make this appear in select input loop! 
-  updateRange(range) {
+  updateRange(range = null) {
     this.ok2book = true;
     var fromDate = moment(this.booking.fromDate);
     var toDate = moment(this.booking.toDate);
+    // this.booking.daysTaken = 0;
 
     // this.booking.daysTaken = fromDate.diff(toDate, 'days'); //still counts weekends
     // this.booking.daysTaken = Math.abs(this.booking.daysTaken) + 1;
 
     //for each week day, add to array
     this.booking.dates = this.enumerateDaysBetweenDates(moment(this.booking.fromDate), moment(this.booking.toDate));
-
-    // if Unpaid is not selected calc daysTaken
-    if (this.booking.type !== 'Unpaid') {
-      if (fromDate.isSame(toDate)) {
-        this.booking.daysTaken = 1;
-      } else {
-        this.booking.daysTaken = this.booking.dates.length;
-      }
-    }
+    this.updateDaysTaken();
 
     let sub = this.HolidayService.getAllHolidays().subscribe(data => {
       let compareFromDate = fromDate;

@@ -30,7 +30,8 @@
     </select>-->
 
     <!--edit-->
-    <select name="days" [(ngModel)]="date.slot" required>
+    <!--change to ngmodel change to get up to date change-->
+    <select name="days" [(ngModel)]="date.slot" (ngModelChange)="updateDaysTaken()" required>
         <option *ngFor="let length of lengthsObj" [ngValue]="length.slot">{{length.slot}}</option>
     </select>
 

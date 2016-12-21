@@ -1,9 +1,14 @@
+interface dates {
+    date: string;
+    slot: string;    
+}
+
 export class Holiday{
     userId:string;
     // approved:boolean;
     // rejected:boolean;
     type: string;
-    dates: any[];
+    dates;//dates:dates[];
     daysTaken:number;
     fromDate:string;
     toDate:string;
@@ -16,4 +21,4 @@ export class Holiday{
 //     Paid, 
 //     Sick, 
 //     Leave        
-// }
+// } 
