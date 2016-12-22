@@ -11,9 +11,8 @@
   <label for="type">Type</label>
   <select name="type" [(ngModel)]="booking.type" required>
       <!--need to set type on model-->
-      <option *ngFor="let type of types" [selected]="Paid" [value]="type">  
-        {{type}}
-      </option>
+      <!--this works when loading a model but not for new-->
+      <option *ngFor="let type of types" [value]="type">{{type}}</option>
   </select>
 
 <!--date ranges-->
@@ -26,6 +25,7 @@
   <label for="days">Days</label>
   <div *ngFor="let date of booking.dates">
     {{date.date}}
+    {{date.slot}}
 
     <!--new-->
     <!--<select *ngIf="true" name="days" [(ngModel)]="date.slot" required>
@@ -33,12 +33,14 @@
     </select>-->
 
     <!--edit-->
-    <!--change to ngmodel change to get up to date change-->
+    <!--change to ngmodel change to get up-to-date change-->
     <select name="days" [(ngModel)]="date.slot" (ngModelChange)="updateDaysTaken()" required>
-        <option *ngFor="let length of lengthsObj" [ngValue]="length.slot">{{length.slot}}</option>
+        <option *ngFor="let length of lengthsObj" [value]="length.slot">{{length.slot}}</option>
     </select>
-
   </div>
+
+  <label for="comments">comments</label>
+  <input type="text" name="comments" id="comments" [(ngModel)]="booking.comments">
 
   <button type="submit" class="button" [disabled]="!bookingForm.form.valid || !ok2book">Submit</button>
 </form>
