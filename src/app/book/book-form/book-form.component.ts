@@ -4,7 +4,7 @@ import { Holiday } from '../../model/holiday';
 // import { Holiday } from '../../model/holiday.interface';
 import { HolidayService } from '../../shared/holiday.service';
 import { ConstantsService } from '../../shared/constants.service';
-import { LoginStatusService } from '../../shared/login-status.service';
+// import { LoginStatusService } from '../../shared/login-status.service';
 
 import { FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
 import { Observable } from 'rxjs/Observable'
@@ -21,7 +21,7 @@ import * as moment from 'moment';
 })
 export class BookFormComponent implements OnInit {
 
-  constructor(public ConstantsService: ConstantsService, public LoginStatus: LoginStatusService, public HolidayService: HolidayService, private route: ActivatedRoute, private router: Router) { }
+  constructor(public ConstantsService: ConstantsService, public HolidayService: HolidayService, private route: ActivatedRoute, private router: Router) { }
 
   // dates = [moment('D/M/YYYY'),moment('D/M/YYYY').add(1,'days')];
   // dates: string[];
@@ -87,12 +87,14 @@ export class BookFormComponent implements OnInit {
   // not returning this in a service is a pain.
   // we could move this up to app module, then move values down?
 
+
   getConstants() {
     this.constantsSub = this.ConstantsService.getConstants().subscribe(data => {
       this.basic = data[0].$value;
     });
   }
 
+  // NOTE: CAN WE NOT MAP OVER THIS AND MAINTAIN OBSERVABLE BEFORE RETURNING TO REDUCE COMPONENT CODE?
   getHolidayInfo() {
     this.bookingData$ = this.HolidayService.getHolidays();
     //array of matching bookings for user      
@@ -118,8 +120,6 @@ export class BookFormComponent implements OnInit {
 
   updateDaysTaken() {
     var selectedDates = this.getSelectedDates();
-    // var fromDate = moment(this.booking.fromDate);
-    // var toDate = moment(this.booking.toDate);
     this.booking.daysTaken = 0;
 
     // if Unpaid is not selected calc daysTaken
@@ -140,8 +140,6 @@ export class BookFormComponent implements OnInit {
         // we have should have a range of more than 1 so we can loop
       } else {
         this.booking.dates.forEach(item => {
-          // console.log(item);
-
           if (item.slot !== 'Full') {
             console.log('add half day');
             this.booking.daysTaken += .5;
@@ -158,11 +156,6 @@ export class BookFormComponent implements OnInit {
 
   //get each date selected and then make this appear in select input loop! 
   updateRange(range = null) {
-    // this.booking.daysTaken = 0;
-
-    // this.booking.daysTaken = fromDate.diff(toDate, 'days'); //still counts weekends
-    // this.booking.daysTaken = Math.abs(this.booking.daysTaken) + 1;
-
     //for each week day, add to array
     this.booking.dates = this.enumerateDaysBetweenDates(moment(this.booking.fromDate), moment(this.booking.toDate));
     this.updateDaysTaken();
@@ -174,17 +167,12 @@ export class BookFormComponent implements OnInit {
     this.ok2book = true;
     var selectedDates = this.getSelectedDates();
     this.bookingData$.subscribe(data => {
-      let compareFromDate = selectedDates.fromDate;
-      let compareToDate = selectedDates.toDate;
       data.forEach(element => {
-
         let fromDate2 = moment(element.fromDate).subtract(1, 'days');
-        let toDate2 = moment(element.toDate).add(1, 'days');
-
-        // console.log(fromDate2,toDate2,compareFromDate);        
+        let toDate2 = moment(element.toDate).add(1, 'days'); 
 
         // if we find any dates bookHol is turned off
-        if (compareFromDate.isBetween(fromDate2, toDate2) || compareToDate.isBetween(fromDate2, toDate2)) {
+        if (selectedDates.fromDate.isBetween(fromDate2, toDate2) || selectedDates.toDate.isBetween(fromDate2, toDate2)) {
           this.message = 'Booking Conflict';
           this.ok2book = false;
         }
@@ -203,7 +191,14 @@ export class BookFormComponent implements OnInit {
     console.log('submit');
     // this.ok2book = this.HolidayService.checkAvailability(this.booking,range);
     this.booking.status = 'pending';
-    this.HolidayService.addHoliday(this.booking);
+    if(!this.HolidayService.addHoliday(this.booking)){
+      //message
+    }else{
+      this.booking = new Holiday();
+      this.ok2book = true;
+      //TODO pop up a 'Booked' notification
+    }
+
   }
 
   // TODO: Remove this when we're done
@@ -220,8 +215,8 @@ export class BookFormComponent implements OnInit {
 
       if (id) {
 
-        const userId = this.LoginStatus.getStatus();
-        console.log(userId);
+        // const userId = this.LoginStatus.getStatus();
+        // console.log(userId);
 
         const bookingData = this.HolidayService.getHolidays();
 
@@ -239,9 +234,7 @@ export class BookFormComponent implements OnInit {
   }
 
   ngOnDestroy() {
-
     this.constantsSub.unsubscribe();
     this.bookingDataSub.unsubscribe();
-
   }
 }
