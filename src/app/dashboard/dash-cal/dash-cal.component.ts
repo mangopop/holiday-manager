@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { HolidayService } from '../../shared/holiday.service';
-import { LoginStatusService } from '../../shared/login-status.service';
 import { PublicHolService } from '../public-hol.service';
 import { FirebaseListObservable } from 'angularfire2';
 import * as moment from 'moment';
@@ -16,7 +15,7 @@ export class DashCalComponent implements OnInit {
 
   //http://kayaposoft.com/enrico/json/v1.0/?action=getPublicHolidaysForMonth&month=1&year=2016&country=eng
   //http://kayaposoft.com/enrico/json/v1.0/?action=getPublicHolidaysForYear&year=2016&country=eng
-  constructor(public LoginStatus: LoginStatusService, public HolidayService: HolidayService, public PublicHol: PublicHolService) { }
+  constructor(public HolidayService: HolidayService, public PublicHol: PublicHolService) { }
 
 
   bankHol = [
@@ -60,6 +59,7 @@ export class DashCalComponent implements OnInit {
   daysOfWeek: string[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   dates: any[];
   holidayDataSub;
+  publicHolidaySub;
 
   //get holidays
   getHols() {
@@ -85,7 +85,7 @@ export class DashCalComponent implements OnInit {
       // ];
 
       // need to check if this is duplicating an already booked date, adding here assumes its booked, which don't want
-      this.PublicHol.getBankHoliday().subscribe(items => {
+      this.publicHolidaySub = this.PublicHol.getBankHoliday().subscribe(items => {
         // THIS SEEMS WRONG TO LOOP AGAIN? BUT THIS IS HOW THE TUTORIAL DOES IT?
         items.forEach(item => {
           // if undefined add it
@@ -156,6 +156,7 @@ export class DashCalComponent implements OnInit {
             }
           });
           if (!match) {
+            // TODO add some weeked logic
             monthDayArr.push({ day: i, booked: false });
           }
         }
@@ -182,7 +183,7 @@ export class DashCalComponent implements OnInit {
 
   ngOnInit() {
     this.getHols();
-    console.log(this.PublicHol.getBankHoliday().subscribe(data => console.log(data)));
+    // console.log(this.PublicHol.getBankHoliday().subscribe(data => console.log(data)));
 
     // this.createCal();
   }

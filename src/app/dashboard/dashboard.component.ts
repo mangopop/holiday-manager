@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 
 import { HolidayService } from '../shared/holiday.service';
-import { LoginStatusService } from '../shared/login-status.service';
 import { ConstantsService } from '../shared/constants.service';
 
 import { FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
@@ -20,7 +19,6 @@ import 'rxjs/add/operator/first';
 export class DashboardComponent implements OnInit {
 
   constructor(
-    public LoginStatus: LoginStatusService,
     public HolidayService: HolidayService,
     public ConstantsService: ConstantsService,
     ) {}
