@@ -40,22 +40,8 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // getLoginStatus() {
-  //   console.log('call getLoginStatus from dashboard');    
-  //   // this.userId = this.LoginStatus.getStatus(); //TODO: should wait for this first
-  //   this.LoginStatus.getAuth().subscribe(auth => {      
-  //     if (auth != null) {
-  //       console.log(auth);
-  //       this.uid = auth.uid;
-  //       this.getHolidayInfo();
-  //     } else {
-  //       console.log('error getting auth');
-  //     }
-  //   });
-  // }
 
   getHolidayInfo() {
-    console.log('call getHolidayInfo from dashboard');
     this.bookingData$ = this.HolidayService.getHolidays();
 
     // ERROR: for some reason this log displays accumulating arrays
@@ -63,10 +49,15 @@ export class DashboardComponent implements OnInit {
     // https://github.com/angular/angularfire2/issues/574
 
     //array of matching bookings for user      
-    this.bookingDataSub = this.bookingData$.subscribe(data => {    
+    this.bookingDataSub = this.bookingData$.subscribe(data => {
       console.log(data);
+        
       
-      // approved panel hols      
+      // approved panel hols
+      // get days from startdate and divide by 5
+      
+
+      // this.daysTaken = data.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken,0);      
       this.daysTaken = data.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken,0);      
       this.daysLeft = this.basic - this.daysTaken;
       //  pending panel hols

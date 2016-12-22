@@ -28,7 +28,6 @@ export class ProfileComponent implements OnInit {
     // const userId = this.LoginStatus$.getStatus();
     // console.log(userId);
 
-    // we don't get user by login id! we have to get by key!
     this.LoginStatus$.getAuth().subscribe(data => {
       console.log(data);
       this.user$ = this.userList$.getUserByEmail('simon@nitritex.com');
