@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { User } from '../../shared/user';
-import { UserListService } from '../../shared/user-list.service'; // i've imported this in module!? do that mean I just don't add it under @component
+// import { UserListService } from '../../shared/user-list.service'; // i've imported this in module!? do that mean I just don't add it under @component
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
 import { Observable } from 'rxjs/Observable'
@@ -13,7 +13,7 @@ import { Observable } from 'rxjs/Observable'
 })
 export class ManageUserDetailsComponent implements OnInit {
 
-  constructor(private UserListService$: UserListService, private route: ActivatedRoute, private router: Router) { }
+  constructor(private route: ActivatedRoute, private router: Router) { }
 
   @Input() user;
   @Input() newUser;
@@ -21,6 +21,7 @@ export class ManageUserDetailsComponent implements OnInit {
   @Output() onUpdateUser: EventEmitter<User> = new EventEmitter<User>();
 
   message;
+  get diagnostic() { return JSON.stringify(this.user); }
 
   onSubmit() {
     if (this.user.password === this.user.password2) {
@@ -36,14 +37,19 @@ export class ManageUserDetailsComponent implements OnInit {
     this.onUpdateUser.emit(this.user);
   }
 
-  reset() {
-    this.newUser = true;
+  initValues(){
     this.user = new User();
+    this.newUser = true;
+    this.user.xhol = 0;
+    this.user.manager = false;
+  }
+
+  reset() {
+    this.initValues();
   }
 
   ngOnInit() {
-    this.newUser = true;
-
+    this.initValues();
   }
 
 }

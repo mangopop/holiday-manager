@@ -23,7 +23,10 @@ export class ManageComponent {
   onNewUser() {
     this.user = new User();
     this.newUser = true;
+    this.user.xhol = 0;
+    this.user.manager = false;
   }
+
 
   //should listen emitted event, Output is on element
   onSelectUser(user: User) {
@@ -51,12 +54,24 @@ export class ManageComponent {
   }
 
   onUpdateUser(user) {
-    this.userList$.updateUser(user.$key,
-    {
+
+    var customUser = {
       firstname:user.firstname,
       surname:user.surname,
-      email:user.email
-    });
+      xhol:user.xhol,
+      startDate:user.startDate,
+      manager:user.manager,
+    }
+
+    // we might not set birthday so don't update it if not set
+    if(user.birthday){
+      customUser['birthday'].user.birthday;
+    }
+
+    console.log(customUser);
+    
+
+    this.userList$.updateUser(user.$key,customUser);
   }
 
   ngOnInit() {
