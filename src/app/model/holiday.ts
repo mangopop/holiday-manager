@@ -15,6 +15,7 @@ export class Holiday{
     status:string;
     comment?:string;
     key?:string;
+    userIdKey:string;
 }
 
 // export enum type {
