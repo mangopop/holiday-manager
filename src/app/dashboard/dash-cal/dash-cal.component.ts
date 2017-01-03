@@ -90,8 +90,8 @@ export class DashCalComponent implements OnInit {
       this.publicHolidaySub = this.PublicHol.getBankHoliday().subscribe(items => {
         // THIS SEEMS WRONG TO LOOP AGAIN? BUT THIS IS HOW THE TUTORIAL DOES IT?
         items.forEach(item => {
-          // if undefined add it
-          if (!_.find(this.dates, ['date', item.date.day + '-' + item.date.month + '-' + item.date.year])) { //element or undefined
+          // if < 0 add it
+          if(this.dates.indexOf(item.date.day + '-' + item.date.month + '-' + item.date.year) < 0){
             this.dates.push({ date: item.date.day + '-' + item.date.month + '-' + item.date.year, bankHol: true });
           }
         });

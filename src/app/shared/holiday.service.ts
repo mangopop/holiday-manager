@@ -13,9 +13,11 @@ export class HolidayService {
 
   // push/update/remove
 
+  // constructor isn't called a second time!?
   // on first call this isn't being fired in time
   constructor(private af: AngularFire, private loginStatus: LoginStatusService) {
     this.getLogin();
+    console.log('holiday contructor called');  
   }
 
   // holiday: FirebaseListObservable<any[]>;
@@ -51,8 +53,9 @@ export class HolidayService {
   }
 
   getHolidays() {
-    console.log('getHolidays');
-    console.log(this.subject);
+    // console.log('getHolidays');
+    // when we get auth this is broadcasted and we recieve here
+    // we are listening here, only getlogin is calling this
     this.subject.subscribe({
       next: (v) => console.log('value: ' + v)
     });
@@ -63,13 +66,11 @@ export class HolidayService {
       {
         query: {
           orderByChild: 'userId',
-          equalTo: this.subject //how to this receive the id out of this? Somehow firebase extracts as would a subcription
+          equalTo: this.uid //how to this receive the id out of this? Somehow firebase extracts as would a subcription
         }
       }
     );
   }
-
-
 
   getAllHolidays() {
     return this.af.database.list('Holiday');
@@ -83,6 +84,7 @@ export class HolidayService {
         if (auth != null) {
           // push value to observer
           this.subject.next(auth.uid);
+          // set in global 
           this.uid = auth.uid;
         }
         else { console.log('error getting auth'); }
