@@ -6,15 +6,18 @@
       <th>name</th>
       <th>from date</th>
       <th>to date</th>
+      <th>days taken</th>
       <th>type</th>
       <th>status</th>
       <th>comments</th>
       <th>approve/reject</th>
     </tr>
-    <tr *ngFor="let item of holidays$ | async">
-      <td>{{item.name}}</td>
+    <tr *ngFor="let item of mergeHolidays$ | async">
+      <!--{{item.user | async | json}}-->
+      <td>{{ (item.user | async)?.firstname}} {{(item.user | async)?.surname}}</td>
       <td>{{item.fromDate}}</td>
       <td>{{item.toDate}}</td>      
+      <td>{{item.daysTaken}}</td>      
       <td>{{item.type}}</td>
       <td>{{item.status}}</td>
       <td>{{item.comments}}</td>
