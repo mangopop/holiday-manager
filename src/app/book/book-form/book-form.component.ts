@@ -163,6 +163,7 @@ export class BookFormComponent implements OnInit {
 
   }
 
+  // TODO not taking into account service days
   compareDates() {
     this.ok2book = true;
     var selectedDates = this.getSelectedDates();
