@@ -4,6 +4,7 @@ import { Holiday } from '../../model/holiday';
 // import { Holiday } from '../../model/holiday.interface';
 import { HolidayService } from '../../shared/holiday.service';
 import { ConstantsService } from '../../shared/constants.service';
+import { UserListService } from '../../shared/user-list.service';
 // import { LoginStatusService } from '../../shared/login-status.service';
 
 import { FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
@@ -24,6 +25,7 @@ export class BookFormComponent implements OnInit {
   constructor(
     public ConstantsService: ConstantsService,
     public HolidayService: HolidayService,
+    public UserListService: UserListService,
     private route: ActivatedRoute,
     private router: Router
   ) { }
@@ -41,11 +43,12 @@ export class BookFormComponent implements OnInit {
   daysTaken: number;
   daysPending: number;
   // bookingData$: FirebaseListObservable<any>;
-  testMerge;
+  service: number;
 
   bookingDataSub;
   constantsSub;
   holidayServiceSub;
+  userDataSub;
 
   // we can fill in all values, or none. But then the form thinks it is filled in
   public booking = new Holiday();
@@ -106,12 +109,29 @@ export class BookFormComponent implements OnInit {
     // this.bookingData$ = this.HolidayService.getHolidays();
     //array of matching bookings for user      
     this.bookingDataSub = this.HolidayService.getHolidays().subscribe(data => {
-      // approved panel hols      
+
       this.daysTaken = data.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken, 0);
-      // this is the only data that is used, only once in comparedates
-      this.daysLeft = this.basic - this.daysTaken;
-      //  pending panel hols
       this.daysPending = data.filter(hol => hol.status === 'pending').reduce((pre, cur) => pre + cur.daysTaken, 0);
+
+      this.userDataSub = this.UserListService.getUserByEmailAuto().subscribe(data => {
+        var currentYear = new Date().getFullYear();
+        var currentMonth = new Date().getMonth();
+        var startDate = new Date(data[0].startDate)
+        var startYear = startDate.getFullYear();
+        // calculate service
+        var served = currentYear - startYear;
+        if (served >= 5 && served <= 9) { this.service = 1 }
+        if (served >= 10 && served <= 14) { this.service = 3 }
+        if (served >= 15) { this.service = 5 }
+        // don't use basic if user has start in same year
+        if (currentYear === startYear) {
+          this.daysLeft = Math.floor(((currentMonth - startDate.getMonth() +1) /12) * this.basic);
+          // this.daysLeft = Math.floor((currentMonth - startDate.getMonth() + 1) * 1.66);
+        } else {
+          this.daysLeft = this.basic - this.daysTaken + this.service;
+        }
+        this.userDataSub.unsubscribe();
+      });
       this.bookingDataSub.unsubscribe();// this stopped the pyramid effect when we couldn't do it onDestory
     });
   }
@@ -188,12 +208,12 @@ export class BookFormComponent implements OnInit {
         // subscribing in another sub is a bit slow here.
         // this.HolidayService.testMerge().subscribe(data => {
         //   console.log(data);
-          
-          // alert and disable button if don't have days left
-          if (this.daysLeft < this.booking.daysTaken) {
-            this.message = 'You do not have enough holiday';
-            this.ok2book = false;
-          }
+
+        // alert and disable button if don't have days left
+        if (this.daysLeft < this.booking.daysTaken) {
+          this.message = 'You do not have enough holiday';
+          this.ok2book = false;
+        }
         // });
 
 
