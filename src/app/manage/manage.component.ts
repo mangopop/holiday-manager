@@ -61,6 +61,7 @@ export class ManageComponent {
       xhol:user.xhol,
       startDate:user.startDate,
       manager:user.manager,
+      type:user.type
     }
 
     // we might not set birthday so don't update it if not set

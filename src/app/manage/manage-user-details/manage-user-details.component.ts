@@ -19,6 +19,7 @@ export class ManageUserDetailsComponent implements OnInit {
   @Input() newUser;
   @Output() onSaveUser: EventEmitter<User> = new EventEmitter<User>();
   @Output() onUpdateUser: EventEmitter<User> = new EventEmitter<User>();
+  public types = ['select an option', 'fulltime', 'partime'];
 
   message;
   get diagnostic() { return JSON.stringify(this.user); }
@@ -50,6 +51,7 @@ export class ManageUserDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.initValues();
+    this.user.type = this.types[0];
   }
 
 }

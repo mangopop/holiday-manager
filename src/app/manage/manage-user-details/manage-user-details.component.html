@@ -34,9 +34,13 @@
 
     </div>
 
-    <div *ngIf="!newUser">
+    <div *ngIf="!newUser"></div>
 
-    </div>
+    <!--i hate selects in angular 2 -->
+    <label for="type">Part Time / Full Time</label>
+    <select name="type" [(ngModel)]="user.type" required>
+        <option *ngFor="let type of types" [value]="type" [disabled]="type == 'select an option'" >{{type}}</option>
+    </select>
 
     <label for="xhol">Extra holiday</label>
     <input type="number" id="xhol" name="xhol" [(ngModel)]="user.xhol">
