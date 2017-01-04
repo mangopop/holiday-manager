@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HolidayService } from '../shared/holiday.service';
+import { Holiday } from '../model/holiday';
 import { UserListService } from '../shared/user-list.service';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
@@ -29,7 +30,7 @@ export class ApproveComponent implements OnInit {
   holidays$;
   users$;
   mergeHolidays$;
-  bookings; //array
+  bookings:Holiday; //array
 
   //change booking to approve 
   approve(booking){
@@ -44,10 +45,8 @@ export class ApproveComponent implements OnInit {
 
   ngOnInit() {
     // build list of bookings. 
-    // Will have to attach name, merge streams?
     this.holidays$ = this.HolidayService.getAllHolidays();
     this.users$ = this.UserListService.getUsers();
-
     this.mergeHolidays$ = this.HolidayService.getAllHolidaysAndUsers();
 
     //TEST
