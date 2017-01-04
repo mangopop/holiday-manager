@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 
 import { HolidayService } from '../shared/holiday.service';
+import { UserListService } from '../shared/user-list.service';
 import { ConstantsService } from '../shared/constants.service';
 
 import { FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
@@ -20,6 +21,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     public HolidayService: HolidayService,
+    public UserListService: UserListService,
     public ConstantsService: ConstantsService,
     ) {}
 
@@ -29,17 +31,19 @@ export class DashboardComponent implements OnInit {
   daysLeft: number;
   daysTaken: number;
   daysPending: number;
+  service: number;
   bookingData$: FirebaseListObservable<any>;
   bookingDataSub;
   constantsSub;
+  userDataSub;
 
+  // this is still doing things the old way, should probably thread this through elsewhere
   getConstants(){
     this.constants$ = this.ConstantsService.getConstants();
     this.constantsSub = this.constants$.subscribe(data => {
       this.basic = data[0].$value;
     });
   }
-
 
   getHolidayInfo() {
     this.bookingData$ = this.HolidayService.getHolidays();
@@ -50,16 +54,19 @@ export class DashboardComponent implements OnInit {
 
     //array of matching bookings for user      
     this.bookingDataSub = this.bookingData$.subscribe(data => {
-      console.log(data);
-        
-      
-      // approved panel hols
-      // get days from startdate and divide by 5
-      
+      // console.log(data);
 
       // this.daysTaken = data.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken,0);      
-      this.daysTaken = data.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken,0);      
-      this.daysLeft = this.basic - this.daysTaken;
+      this.daysTaken = data.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken,0);   
+
+      this.userDataSub = this.UserListService.getUserByEmailAuto().subscribe(data => {       
+        var currentYear = new Date().getFullYear();
+        var startYear = new Date(data[0].startDate).getFullYear();
+        this.service = Math.floor((currentYear - startYear) / 5); 
+
+        this.daysLeft = this.basic - this.daysTaken + this.service;
+      });
+      
       //  pending panel hols
       this.daysPending = data.filter(hol => hol.status === 'pending').reduce((pre, cur) => pre + cur.daysTaken,0);
       // bookingDataSub.unsubscribe();
@@ -75,6 +82,7 @@ export class DashboardComponent implements OnInit {
   ngOnDestroy(){
     this.bookingDataSub.unsubscribe();
     this.constantsSub.unsubscribe();
+    this.userDataSub.unsubscribe();
   }
 
 }
