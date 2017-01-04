@@ -74,7 +74,7 @@ export class DashboardComponent implements OnInit {
   //             },
   //             basic: basic
   //           }
-          
+
   //       });
   //     });
   //   });
@@ -94,13 +94,20 @@ export class DashboardComponent implements OnInit {
       this.userDataSub = this.UserListService.getUserByEmailAuto().subscribe(data => {
         var currentYear = new Date().getFullYear();
         var currentMonth = new Date().getMonth();
-        var startDate = new Date(data[0].startDate) 
+        var startDate = new Date(data[0].startDate)
         var startYear = startDate.getFullYear();
-        this.service = Math.floor((currentYear - startYear) / 5);
+        // calculate service
+        var served = currentYear - startYear;
+
+        if (served >= 5 && served <= 9) { this.service = 1 }
+        if (served >= 10 && served <= 14) { this.service = 3 }
+        if (served >= 15) { this.service = 5 }
+
         // don't use basic if user has start in same year
-        if(currentYear === startYear){        
-          this.daysLeft = Math.floor((currentMonth - startDate.getMonth() +1) * 1.66);
-        }else{
+        if (currentYear === startYear) {
+          this.daysLeft = Math.floor(((currentMonth - startDate.getMonth() + 1) / 12) * this.basic);
+          // this.daysLeft = Math.floor((currentMonth - startDate.getMonth() +1) * 1.66);
+        } else {
           this.daysLeft = this.basic - this.daysTaken + this.service;
         }
       });
@@ -109,6 +116,7 @@ export class DashboardComponent implements OnInit {
       this.daysTaken = data.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken, 0);
       //  pending panel hols
       this.daysPending = data.filter(hol => hol.status === 'pending').reduce((pre, cur) => pre + cur.daysTaken, 0);
+      this.bookingDataSub.unsubscribe();
     });
 
   }
