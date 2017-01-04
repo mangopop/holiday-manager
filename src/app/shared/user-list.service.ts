@@ -54,9 +54,7 @@ export class UserListService {
     });
   }
 
-  getUserByEmailAuto() {
-    console.log(this.userEmail);
-    
+  getUserByEmailAuto() {    
     return this.af.database.list('User', {
       query: {
         orderByChild: 'email',
