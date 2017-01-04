@@ -70,7 +70,8 @@ export class HolidayService {
   }
 
   getHolidays() {
-    // console.log('getHolidays');
+    console.log('getHolidays');
+    // this.getLogin();
     // when we get auth this is broadcasted and we recieve here
     // we are listening here, only getlogin is calling this
     this.subject.subscribe({
@@ -79,12 +80,15 @@ export class HolidayService {
 
     // var $login = this.loginStatus.getAuth();
 
+    // doesn't fire in time
+    // console.log(this.uid);
+    
     return this.af.database.list('Holiday',
       {
         query: {
           orderByChild: 'userId',
-          equalTo: this.uid
-          // equalTo: this.subject //how to this receive the id out of this? Somehow firebase extracts as would a subcription
+          equalTo: this.uid ? this.uid : this.subject
+          //Somehow firebase extracts as would a subcription
         }
       }
     );
@@ -146,6 +150,8 @@ export class HolidayService {
   // have to write it out this way until I figure out how to get results back from service post subscribe
   // map?
   getLogin() {
+    console.log('getlogin called');
+    
     this.subject = new Subject();
     this.loginStatus.getAuth().subscribe(
       auth => {
