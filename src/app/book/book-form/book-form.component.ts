@@ -21,7 +21,12 @@ import * as moment from 'moment';
 })
 export class BookFormComponent implements OnInit {
 
-  constructor(public ConstantsService: ConstantsService, public HolidayService: HolidayService, private route: ActivatedRoute, private router: Router) { }
+  constructor(
+    public ConstantsService: ConstantsService,
+    public HolidayService: HolidayService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) { }
 
   // dates = [moment('D/M/YYYY'),moment('D/M/YYYY').add(1,'days')];
   // dates: string[];
@@ -35,7 +40,9 @@ export class BookFormComponent implements OnInit {
   daysLeft: number;
   daysTaken: number;
   daysPending: number;
-  bookingData$: FirebaseListObservable<any>;
+  // bookingData$: FirebaseListObservable<any>;
+  testMerge;
+
   bookingDataSub;
   constantsSub;
   holidayServiceSub;
@@ -96,17 +103,17 @@ export class BookFormComponent implements OnInit {
 
   // NOTE: CAN WE NOT MAP OVER THIS AND MAINTAIN OBSERVABLE BEFORE RETURNING TO REDUCE COMPONENT CODE?
   getHolidayInfo() {
-    this.bookingData$ = this.HolidayService.getHolidays();
+    // this.bookingData$ = this.HolidayService.getHolidays();
     //array of matching bookings for user      
-    this.bookingDataSub = this.bookingData$.subscribe(data => {
+    this.bookingDataSub = this.HolidayService.getHolidays().subscribe(data => {
       // approved panel hols      
       this.daysTaken = data.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken, 0);
+      // this is the only data that is used, only once in comparedates
       this.daysLeft = this.basic - this.daysTaken;
       //  pending panel hols
       this.daysPending = data.filter(hol => hol.status === 'pending').reduce((pre, cur) => pre + cur.daysTaken, 0);
       this.bookingDataSub.unsubscribe();// this stopped the pyramid effect when we couldn't do it onDestory
     });
-
   }
 
   // ----------------- CALCULATE BOOKING ------------------- //
@@ -167,10 +174,10 @@ export class BookFormComponent implements OnInit {
   compareDates() {
     this.ok2book = true;
     var selectedDates = this.getSelectedDates();
-    this.bookingData$.subscribe(data => {
+    this.HolidayService.getHolidays().subscribe(data => {
       data.forEach(element => {
         let fromDate2 = moment(element.fromDate).subtract(1, 'days');
-        let toDate2 = moment(element.toDate).add(1, 'days'); 
+        let toDate2 = moment(element.toDate).add(1, 'days');
 
         // if we find any dates bookHol is turned off
         if (selectedDates.fromDate.isBetween(fromDate2, toDate2) || selectedDates.toDate.isBetween(fromDate2, toDate2)) {
@@ -178,11 +185,17 @@ export class BookFormComponent implements OnInit {
           this.ok2book = false;
         }
 
-        // alert and disable button if don't have days left
-        if (this.daysLeft < this.booking.daysTaken) {
-          this.message = 'You do not have enough holiday';
-          this.ok2book = false;
-        }
+        // subscribing in another sub is a bit slow here.
+        // this.HolidayService.testMerge().subscribe(data => {
+        //   console.log(data);
+          
+          // alert and disable button if don't have days left
+          if (this.daysLeft < this.booking.daysTaken) {
+            this.message = 'You do not have enough holiday';
+            this.ok2book = false;
+          }
+        // });
+
 
       });
     });
@@ -192,9 +205,9 @@ export class BookFormComponent implements OnInit {
     console.log('submit');
     // this.ok2book = this.HolidayService.checkAvailability(this.booking,range);
     this.booking.status = 'pending';
-    if(!this.HolidayService.addHoliday(this.booking)){
+    if (!this.HolidayService.addHoliday(this.booking)) {
       //message
-    }else{
+    } else {
       this.booking = new Holiday();
       this.ok2book = true;
       //TODO pop up a 'Booked' notification
