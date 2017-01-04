@@ -6,15 +6,17 @@ import 'rxjs/add/operator/do';
 // import { Rx } from 'rxjs'; 
 import { AngularFire, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
 import { User } from './user';
+import { LoginStatusService } from './login-status.service';
 
 @Injectable()
 export class UserListService {
 
   users$: FirebaseListObservable<any[]>;
+  userEmail: string;
 
-  constructor(private af: AngularFire) {
+  constructor(private af: AngularFire, private LoginStatus: LoginStatusService) {
     this.users$ = this.af.database.list('User');
-
+    this.getLoginDetails();
     // this.items = af.database.list('items', {
     //   query: {
     //     orderByChild: 'id',
@@ -25,11 +27,40 @@ export class UserListService {
 
   }
 
+  getLoginDetails() {
+    this.LoginStatus.getAuth().subscribe(
+      auth => {
+        console.log(auth);
+        if (auth != null) {
+          // this.uid = auth.uid;
+          this.userEmail = auth.auth.email;
+        }
+        else { console.log('error getting auth'); }
+      },
+      err => console.log('error'),
+      () => {
+        console.log('complete');
+      },
+    );
+  }
+
   getUserByEmail(email) {
     return this.af.database.list('User', {
       query: {
         orderByChild: 'email',
         equalTo: email,
+        limitToFirst: 1,
+      }
+    });
+  }
+
+  getUserByEmailAuto() {
+    console.log(this.userEmail);
+    
+    return this.af.database.list('User', {
+      query: {
+        orderByChild: 'email',
+        equalTo: this.userEmail,
         limitToFirst: 1,
       }
     });
@@ -84,5 +115,6 @@ export class UserListService {
     // const item = this.af.database.list('User');    
     this.users$.remove(user.$key);
   }
+
 
 }
