@@ -57,9 +57,9 @@ export class HolidayService {
         console.log('error');
         return false;
       })
-      .catch(reject => {
-        console.log('catch');
-      });
+        .catch(reject => {
+          console.log('catch');
+        });
     });
   }
 
@@ -99,6 +99,8 @@ export class HolidayService {
     });
   }
 
+  // have to write it out this way until I figure out how to get results back from service post subscribe
+  // map?
   getLogin() {
     this.subject = new Subject();
     this.loginStatus.getAuth().subscribe(

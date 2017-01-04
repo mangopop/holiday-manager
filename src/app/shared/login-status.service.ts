@@ -12,6 +12,7 @@ export class LoginStatusService {
     uid: null,
   };
 
+  // don't have getLogin here because of subscribe and post subscribe problem so just return the auth object
   getAuth(){
     return this.af.auth;
   }
