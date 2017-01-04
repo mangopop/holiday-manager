@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Holiday } from '../model/holiday';
+import { ConstantsService } from '../shared/constants.service';
 import { LoginStatusService } from '../shared/login-status.service';
 import { UserListService } from '../shared/user-list.service';
 import { AngularFire, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
@@ -17,7 +18,12 @@ export class HolidayService {
 
   // constructor isn't called a second time!?
   // on first call this isn't being fired in time
-  constructor(private af: AngularFire, private loginStatus: LoginStatusService, private UserList: UserListService) {
+  constructor(
+    private af: AngularFire,
+    private loginStatus: LoginStatusService,
+    private Constants: ConstantsService,
+    private UserList: UserListService
+  ) {
     this.getLogin();
     console.log('holiday contructor called');
   }
@@ -97,6 +103,44 @@ export class HolidayService {
       }
       return items;
     });
+  }
+
+  // the beast,
+  // the beauty of this is we haven't subscribed, 
+  // it's all in sync
+  // and this is how services can be more useful
+  // one problem, how to pass it broken down into seperate components
+  testMerge() {
+    return this.getHolidays().mergeMap(hol => {
+      // console.log(hol);
+      
+      return this.UserList.getUserByEmailAuto().mergeMap(user => { //nested mergeMap here is required
+        // console.log(user);
+        
+        return this.Constants.getConstants().map(basicData => {
+          // console.log(basicData);
+          var daysTaken = hol.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken, 0);
+          var daysPending = hol.filter(hol => hol.status === 'pending').reduce((pre, cur) => pre + cur.daysTaken, 0);
+          for(var basicItem of basicData){
+              var basic = basicItem.$value;
+          }          
+          return {
+            daysTaken: daysTaken,
+            daysPending: daysPending,
+            daysLeft: (user) => {
+              var currentYear = new Date().getFullYear();
+              var startYear = new Date(user[0].startDate).getFullYear();
+              return basic - daysTaken + Math.floor((new Date().getFullYear() - startYear) / 5);
+            },
+            basic: basic
+          }
+
+        });
+      });
+    });
+
+    // result$.subscribe(data => console.log(data));
+
   }
 
   // have to write it out this way until I figure out how to get results back from service post subscribe
