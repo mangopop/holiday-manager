@@ -3,6 +3,9 @@ import { Observable } from 'rxjs/Observable';
 import { UserListService } from '../shared/user-list.service';
 import { LoginStatusService } from '../shared/login-status.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
+import { User } from '../shared/user';
+import 'rxjs/add/operator/startWith';
+import 'rxjs/add/operator/map';
 
 @Component({
   selector: 'app-profile',
@@ -12,10 +15,10 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 export class ProfileComponent implements OnInit {
 
   public user$: Observable<any>;
+  public user;
   public userData;
   // NOTE: COULD WE USE LOGIN SERVICE IN THE USER SERVICE TO GET THE ID?
   // WE COULD ALSO TAKE ADVANTAGE OF PASSING MORE DATA DOWN FROM PARENT IE LOGIN STATUS
-
 
   constructor(
     private userList$: UserListService,
@@ -23,19 +26,51 @@ export class ProfileComponent implements OnInit {
     private route: ActivatedRoute
   ) { }
 
+
+  updateUser(user) {
+
+    console.log(user);
+
+    var customUser = {
+      firstname: user.firstname,
+      // surname:user.surname,
+      // xhol:user.xhol,
+      // startDate:user.startDate,
+      // manager:user.manager,
+      // type:user.type
+    }
+
+    // we might not set birthday so don't update it if not set
+    if (user.birthday) {
+      customUser['birthday'] = user.birthday;
+    }
+
+    console.log(customUser);
+
+    this.userList$.updateUser(user.$key, customUser);
+  }
+
   ngOnInit() {
 
-    // const userId = this.LoginStatus$.getStatus();
-    // console.log(userId);
+    // this.LoginStatus$.getAuth().subscribe(data => {
+    //   console.log('get auth');
 
-    this.LoginStatus$.getAuth().subscribe(data => {
-      console.log(data);
-      this.user$ = this.userList$.getUserByEmail('simon@nitritex.com');
+    //   console.log(data);
+    //   this.userList$.getUserByEmail('simon@nitritex.com').startWith([{}]).subscribe(data => {
+    //     console.log('get user');
+
+    //     this.user = data[0]
+    //   });
+    // });
+
+    this.userList$.getUserByEmail2().startWith([{}]).subscribe(data => {
+      console.log(data)
+      this.user = data[0];
     });
 
-    // this.route.params.forEach((params: Params) => {
-    //   let id = +params['id']; // (+) converts string 'id' to a number
-    //   this.user = this.userList$.getUser(id);
+    // this.userList$.getUserByEmailAuto().startWith([{firstname:''} ]).subscribe(data => {
+    //   console.log(data);
+    //   this.user = data[0]
     // });
   }
 

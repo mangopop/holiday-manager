@@ -2,8 +2,23 @@
 
 <!--<p>Username: {{ (user | async)?.firstname }}</p>-->
 <!--http://stackoverflow.com/questions/35534959/access-key-and-value-of-object-using-ngfor-->
-<ul *ngFor="let item of user | async">
-    <li >firstname: {{item.firstname}}</li>
-    <li >surname: {{item.surname}}</li>
-    <li >email: {{item.email}}</li>
-</ul>
+<div *ngIf="!edit">
+    <ul>
+        <li>firstname: {{user.firstname}}</li>
+        <!--<li>surname: {{item.surname}}</li>
+        <li>email: {{item.email}}</li>-->
+    </ul>
+</div>
+
+<a (click)="edit = !edit">edit</a> 
+
+<!--{{diagnostic}}-->
+
+<form *ngIf="edit" (ngSubmit)="onSubmit()" #userForm="ngForm">
+    <label for="firstname">Firstname</label>
+    <input type="text" id="firstname" [(ngModel)]="user.firstname" name="firstname" required>
+
+    <button type="submit" class="button" [disabled]="!userForm.form.valid">
+        <span>Submit</span>
+    </button>
+</form>

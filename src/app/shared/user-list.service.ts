@@ -17,16 +17,10 @@ export class UserListService {
   constructor(private af: AngularFire, private LoginStatus: LoginStatusService) {
     this.users$ = this.af.database.list('User');
     this.getLoginDetails();
-    // this.items = af.database.list('items', {
-    //   query: {
-    //     orderByChild: 'id',
-    //     equalTo: 1
-    //   },
-    //    preserveSnapshot: true 
-    //   });
-
   }
 
+  // this is shit because I have to wait for it.
+  // I could just return the users and filter them but I still need some id!
   getLoginDetails() {
     this.LoginStatus.getAuth().subscribe(
       auth => {
@@ -54,7 +48,22 @@ export class UserListService {
     });
   }
 
-  getUserByEmailAuto() {    
+  getUserByEmail2() {
+    // Don't forget, can't return subscribe, hence mergeMap
+    return this.LoginStatus.getAuth().mergeMap(auth => {
+      return this.af.database.list('User', {
+        query: {
+          orderByChild: 'email',
+          equalTo: auth.auth.email,
+          limitToFirst: 1,
+        }
+      });
+    })
+  }
+
+  getUserByEmailAuto() {
+    console.log(this.userEmail);
+
     return this.af.database.list('User', {
       query: {
         orderByChild: 'email',
@@ -96,8 +105,7 @@ export class UserListService {
   }
 
   addUser(user: User) {
-    // console.log(user);    
-    // const item = this.af.database.list('User');
+    // TODO: do not save password
     this.users$.push(user);
     this.af.auth.createUser({ email: user.email, password: user.password }).then((user) => console.log(`Create User Success:`, user))
   }
