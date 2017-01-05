@@ -25,12 +25,13 @@ export class PublicHolService {
   }
 
   // this is returning a block of json?
-  getBankHoliday(): Observable<any> {
+  getBankHoliday(year): Observable<any> {
     let params = new URLSearchParams();
+    // let year = new Date().getFullYear();
     params.set('callback', 'JSONP_CALLBACK');
 
     return this.jsonp.get(
-      'http://kayaposoft.com/enrico/json/v1.0/?action=getPublicHolidaysForYear&year=2016&country=eng&jsonp=JSONP_CALLBACK')
+      'http://kayaposoft.com/enrico/json/v1.0/?action=getPublicHolidaysForYear&year='+year+'&country=eng&jsonp=JSONP_CALLBACK')
       .map((res: Response) => {
         // return res.json().filter(data => data.id === 1) || {}; for extracting 1 user from list
         return res.json() || {};
