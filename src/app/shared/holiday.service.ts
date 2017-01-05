@@ -82,7 +82,7 @@ export class HolidayService {
 
     // doesn't fire in time
     // console.log(this.uid);
-    
+
     return this.af.database.list('Holiday',
       {
         query: {
@@ -114,27 +114,65 @@ export class HolidayService {
   // it's all in sync
   // and this is how services can be more useful
   // one problem, how to pass it broken down into seperate components
-  testMerge() {
+  // can we not just subscribe to this and then assing the separate values?
+  getHolidayInfo() {
+    console.log('called holiday info');
     return this.getHolidays().mergeMap(hol => {
-      // console.log(hol);
-      
+      console.log(hol);
+
       return this.UserList.getUserByEmailAuto().mergeMap(user => { //nested mergeMap here is required
-        // console.log(user);
-        
+        console.log(user);
+
         return this.Constants.getConstants().map(basicData => {
-          // console.log(basicData);
-          var daysTaken = hol.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken, 0);
-          var daysPending = hol.filter(hol => hol.status === 'pending').reduce((pre, cur) => pre + cur.daysTaken, 0);
-          for(var basicItem of basicData){
-              var basic = basicItem.$value;
-          }          
+          console.log(basicData);
+          
+          var currentYear = new Date().getFullYear();
+          var daysTaken = hol.filter(hol => {
+            var from = new Date(hol.fromDate).getFullYear();
+            var to = new Date(hol.toDate).getFullYear();
+            return hol.status === 'approved'
+              // if any from or to data matches currentyear or currentyear + 1
+              && (from === currentYear || to === currentYear || from === currentYear + 1 || to === currentYear + 1)
+          }).reduce((pre, cur) => pre + cur.daysTaken, 0);
+          var daysPending = hol.filter(hol => {
+            var from = new Date(hol.fromDate).getFullYear();
+            var to = new Date(hol.toDate).getFullYear();
+            return hol.status === 'pending'
+              && (from === currentYear || to === currentYear || from === currentYear + 1 || to === currentYear + 1)
+          }).reduce((pre, cur) => pre + cur.daysTaken, 0);
+
+          for (var basicItem of basicData) {
+            var basic = basicItem.$value;
+          }
+
           return {
             daysTaken: daysTaken,
             daysPending: daysPending,
-            daysLeft: (user) => {
-              var currentYear = new Date().getFullYear();
-              var startYear = new Date(user[0].startDate).getFullYear();
-              return basic - daysTaken + Math.floor((new Date().getFullYear() - startYear) / 5);
+            daysLeft: () => {
+              console.log(user);
+              var currentMonth = new Date().getMonth();
+              if (typeof user[0] != 'undefined'){
+                var startDate = new Date(user[0].startDate);
+              }
+
+              var startYear = startDate.getFullYear();
+              // calculate service
+              var served = currentYear - startYear;
+              var service;
+
+              if (served < 5) { service = 0 }
+              if (served >= 5 && served <= 9) { service = 1 }
+              if (served >= 10 && served <= 14) { service = 3 }
+              if (served >= 15) { service = 5 }
+
+              // don't use basic if user has start in same year
+              if (currentYear === startYear) {
+                console.log('same year');
+                return Math.floor(((currentMonth - startDate.getMonth() + 1) / 12) * basic) - daysTaken + service;
+                // this.daysLeft = Math.floor((currentMonth - startDate.getMonth() +1) * 1.66);
+              } else {
+                return basic - daysTaken + service;
+              }
             },
             basic: basic
           }
@@ -151,7 +189,7 @@ export class HolidayService {
   // map?
   getLogin() {
     console.log('getlogin called');
-    
+
     this.subject = new Subject();
     this.loginStatus.getAuth().subscribe(
       auth => {

@@ -33,7 +33,8 @@ export class DashboardComponent implements OnInit {
   daysTaken: number;
   daysPending: number;
   service: number;
-  // testService:Observable<any>;
+  testService:Observable<any>;
+  testObj;
   // bookingData$: FirebaseListObservable<any>;
   bookingDataSub;
   constantsSub;
@@ -48,40 +49,15 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // testMergeService(){
-  //   this.testService = this.HolidayService.testMerge();
-  // }
+  getHoliday(){
+    this.HolidayService.getHolidayInfo().subscribe(data =>{      
+      this.daysLeft = data.daysLeft();
+      this.daysPending = data.daysPending;
+      this.daysTaken = data.daysTaken;
+    });
+  }
 
-  // the beast,
-  // the beauty of this is we haven't subscribed, 
-  // it's all in sync
-  // and this is how services can be more useful
-  // testMergeLocal() {
-  //   var result$ = this.HolidayService.getHolidays().mergeMap(hol => {
-  //     return this.UserListService.getUserByEmailAuto().mergeMap(user => { //nested mergeMap here is required
-  //       return this.ConstantsService.getConstants().map(consants => {
-  //         console.log(basic);         
-  //           var daysTaken = hol.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken, 0);
-  //           var daysPending = hol.filter(hol => hol.status === 'pending').reduce((pre, cur) => pre + cur.daysTaken, 0);
-  //           var basic = consants[0].$value;
-  //           return {
-  //             daysTaken: daysTaken,
-  //             daysPending: daysPending,
-  //             daysLeft: (user) => {
-  //               var currentYear = new Date().getFullYear();
-  //               var startYear = new Date(user[0].startDate).getFullYear();
-  //               return basic - daysTaken + Math.floor((new Date().getFullYear() - startYear) / 5);
-  //             },
-  //             basic: basic
-  //           }
 
-  //       });
-  //     });
-  //   });
-
-  //   result$.subscribe(data => console.log(data));
-
-  // }
 
   getHolidayInfo() {
     // ERROR: for some reason this log displays accumulating arrays
@@ -90,32 +66,47 @@ export class DashboardComponent implements OnInit {
 
     // array of matching bookings for user      
     this.bookingDataSub = this.HolidayService.getHolidays().subscribe(data => {
+      var currentYear = new Date().getFullYear();
+      // we should only process the days that match the current year
+      this.daysTaken = data.filter(hol => {
+        var from = new Date(hol.fromDate).getFullYear();
+        var to = new Date(hol.toDate).getFullYear();
+        return hol.status === 'approved' 
+        // if any from or to data matches currentyear or currentyear + 1
+        && (from === currentYear || to === currentYear || from === currentYear +1 || to === currentYear +1)
+      }).reduce((pre, cur) => pre + cur.daysTaken, 0);
+      //  pending panel hols
+      this.daysPending = data.filter(hol => {
+        var from = new Date(hol.fromDate).getFullYear();
+        var to = new Date(hol.toDate).getFullYear();
+        return hol.status === 'pending' 
+        // if any from or to data matches currentyear or currentyear + 1
+        && (from === currentYear || to === currentYear || from === currentYear +1 || to === currentYear +1)
+      }).reduce((pre, cur) => pre + cur.daysTaken, 0);
 
       this.userDataSub = this.UserListService.getUserByEmailAuto().subscribe(data => {
-        var currentYear = new Date().getFullYear();
+        // var currentYear = new Date().getFullYear();
         var currentMonth = new Date().getMonth();
         var startDate = new Date(data[0].startDate)
         var startYear = startDate.getFullYear();
         // calculate service
         var served = currentYear - startYear;
 
+        if (served < 5) { this.service = 0 }
         if (served >= 5 && served <= 9) { this.service = 1 }
         if (served >= 10 && served <= 14) { this.service = 3 }
         if (served >= 15) { this.service = 5 }
 
         // don't use basic if user has start in same year
         if (currentYear === startYear) {
-          this.daysLeft = Math.floor(((currentMonth - startDate.getMonth() + 1) / 12) * this.basic);
+          console.log('same year');          
+          this.daysLeft = Math.floor(((currentMonth - startDate.getMonth() + 1) / 12) * this.basic) - this.daysTaken + this.service + data[0].xhol;
           // this.daysLeft = Math.floor((currentMonth - startDate.getMonth() +1) * 1.66);
         } else {
-          this.daysLeft = this.basic - this.daysTaken + this.service;
+          this.daysLeft = this.basic - this.daysTaken + this.service + data[0].xhol;
         }
       });
 
-      // this.daysTaken = data.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken,0);      
-      this.daysTaken = data.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken, 0);
-      //  pending panel hols
-      this.daysPending = data.filter(hol => hol.status === 'pending').reduce((pre, cur) => pre + cur.daysTaken, 0);
       this.bookingDataSub.unsubscribe();
     });
 

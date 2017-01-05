@@ -98,6 +98,14 @@ export class BookFormComponent implements OnInit {
   // we could move this up to app module, then move values down?
 
 
+  getHoliday(){
+    this.HolidayService.getHolidayInfo().subscribe(data =>{      
+      this.daysLeft = data.daysLeft();
+      this.daysPending = data.daysPending;
+      this.daysTaken = data.daysTaken;
+    });
+  }
+
   getConstants() {
     this.constantsSub = this.ConstantsService.getConstants().subscribe(data => {
       this.basic = data[0].$value;
@@ -109,9 +117,21 @@ export class BookFormComponent implements OnInit {
     // this.bookingData$ = this.HolidayService.getHolidays();
     //array of matching bookings for user      
     this.bookingDataSub = this.HolidayService.getHolidays().subscribe(data => {
-
-      this.daysTaken = data.filter(hol => hol.status === 'approved').reduce((pre, cur) => pre + cur.daysTaken, 0);
-      this.daysPending = data.filter(hol => hol.status === 'pending').reduce((pre, cur) => pre + cur.daysTaken, 0);
+      var currentYear = new Date().getFullYear();
+      this.daysTaken = data.filter(hol => {
+        var from = new Date(hol.fromDate).getFullYear();
+        var to = new Date(hol.toDate).getFullYear();
+        return hol.status === 'approved'
+        // if any from or to data matches currentyear or currentyear + 1
+        && (from === currentYear || to === currentYear || from === currentYear + 1 || to === currentYear + 1)
+      }).reduce((pre, cur) => pre + cur.daysTaken, 0);
+      this.daysPending = data.filter(hol => {
+        var from = new Date(hol.fromDate).getFullYear();
+        var to = new Date(hol.toDate).getFullYear();
+        return hol.status === 'pending'
+        // if any from or to data matches currentyear or currentyear + 1
+        && (from === currentYear || to === currentYear || from === currentYear + 1 || to === currentYear + 1)
+      }).reduce((pre, cur) => pre + cur.daysTaken, 0);
 
       this.userDataSub = this.UserListService.getUserByEmailAuto().subscribe(data => {
         var currentYear = new Date().getFullYear();
@@ -120,15 +140,16 @@ export class BookFormComponent implements OnInit {
         var startYear = startDate.getFullYear();
         // calculate service
         var served = currentYear - startYear;
+        if (served < 5) { this.service = 0 }
         if (served >= 5 && served <= 9) { this.service = 1 }
         if (served >= 10 && served <= 14) { this.service = 3 }
         if (served >= 15) { this.service = 5 }
         // don't use basic if user has start in same year
         if (currentYear === startYear) {
-          this.daysLeft = Math.floor(((currentMonth - startDate.getMonth() +1) /12) * this.basic);
+          this.daysLeft = Math.floor(((currentMonth - startDate.getMonth() + 1) / 12) * this.basic) - this.daysTaken + this.service + data[0].xhol;
           // this.daysLeft = Math.floor((currentMonth - startDate.getMonth() + 1) * 1.66);
         } else {
-          this.daysLeft = this.basic - this.daysTaken + this.service;
+          this.daysLeft = this.basic - this.daysTaken + this.service + data[0].xhol;
         }
         this.userDataSub.unsubscribe();
       });
