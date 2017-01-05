@@ -1,6 +1,12 @@
 
 <p>key blue = bankHol, green = approved, yellow = pending, red = rejected.</p>
 
+<ul class="inline">
+  <li (click)="getHols('2016')">2016</li>
+  <li (click)="getHols('2017')">2017</li>
+</ul>
+
+
 <table class="cal-table">
   <tr>
     <th width='30' *ngFor="let day of daysOfWeekTH">{{day[0] | uppercase}}</th>

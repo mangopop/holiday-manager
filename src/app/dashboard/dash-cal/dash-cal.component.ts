@@ -53,7 +53,7 @@ export class DashCalComponent implements OnInit {
 
   // bankHol$ = this.PublicHol.getBankHoliday();
   daysOfWeekTH: string[] = [];
-  years: string[] = ['2016'];
+  years: string[] = ['2017'];
   monthArr: any[] = [];
   months: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   daysOfWeek: string[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -61,12 +61,10 @@ export class DashCalComponent implements OnInit {
   holidayDataSub;
   publicHolidaySub;
 
-  //get holidays
-  getHols() {
+  // is this getting the correct year holidays?
+  getHols(year) {
     const holidayData: FirebaseListObservable<any[]> = this.HolidayService.getHolidays();
     this.holidayDataSub = holidayData.subscribe(data => {
-      console.log(data);
-      
 
       //go through each booking and gather 'dates' into a clean date array
       const nestedDates = data.map(obj => obj.dates.map(dates => {
@@ -87,91 +85,87 @@ export class DashCalComponent implements OnInit {
       // ];
 
       // need to check if this is duplicating an already booked date, adding here assumes its booked, which don't want
-      this.publicHolidaySub = this.PublicHol.getBankHoliday().subscribe(items => {
+      this.publicHolidaySub = this.PublicHol.getBankHoliday(year).subscribe(items => {        
         // THIS SEEMS WRONG TO LOOP AGAIN? BUT THIS IS HOW THE TUTORIAL DOES IT?
         items.forEach(item => {
           // if < 0 add it
-          if(this.dates.indexOf(item.date.day + '-' + item.date.month + '-' + item.date.year) < 0){
+          if (this.dates.indexOf(item.date.day + '-' + item.date.month + '-' + item.date.year) < 0) {
             this.dates.push({ date: item.date.day + '-' + item.date.month + '-' + item.date.year, bankHol: true });
           }
         });
         // console.log(this.dates);
-        this.createCal();
+        this.createCal(year);
       });
+      this.holidayDataSub.unsubscribe();
     });
   }
 
 
-  createCal() {
-    this.years.forEach(year => {
+  createCal(year) {
 
-      // var yearDates = this.dates.filter(value => {
-      //   return value.indexOf(year) >= 0;
-      // })
+    year = String(year);
 
-      // clear all months each year
-      this.monthArr = []; //array of months 1-12
+    // clear all months each year
+    this.monthArr = []; //array of months 1-12
 
-      this.months.forEach(month => {
+    this.months.forEach(month => {
 
-        // clears day each month
-        var monthDayArr: any[] = []; //array of days of month 1-31
-        var currentDay = moment(year + "-" + month).format("ddd");
-        var monthPos = this.daysOfWeek.indexOf(currentDay);
-        var monthDays = moment(year + "-" + month).daysInMonth();
+      // clears day each month
+      var monthDayArr: any[] = []; //array of days of month 1-31
+      var currentDay = moment(year + "-" + month).format("ddd");
+      var monthPos = this.daysOfWeek.indexOf(currentDay);
+      var monthDays = moment(year + "-" + month).daysInMonth();
 
-        // bank holidays  
-        // var monthAdj = month - 1;
+      // bank holidays  
+      // var monthAdj = month - 1;
 
-        // if (typeof this.bankHol[monthAdj] != 'undefined') {
-        //   monthDayArr.push({ day: this.bankHol[monthAdj].date.day, booked: false, bankHol: true });
-        // }
+      // if (typeof this.bankHol[monthAdj] != 'undefined') {
+      //   monthDayArr.push({ day: this.bankHol[monthAdj].date.day, booked: false, bankHol: true });
+      // }
 
-        // build monthArr as array of object
-        for (var i = 1; i < monthDays + 1; i++) {
-          // monthDays is just number we have no date, so could split date and do comparison
+      // build monthArr as array of object
+      for (var i = 1; i < monthDays + 1; i++) {
+        // monthDays is just number we have no date, so could split date and do comparison
 
-          // working one day here ie 2016/01/01 so only should be one match
-          // could we be working on too many dates? 
-          var match = false;
-          this.dates.forEach(dateObj => {
-            var splitDate = dateObj.date.split('-');
-            if (splitDate[2] === year) {
-              // console.log('year matched');
-              if (parseInt(splitDate[1]) === month) {
-                // console.log('month matched');
-                if (parseInt(splitDate[0]) === i) {
-                  // console.log('day matched');   
-
-                  // we've found a match for this date, set booked and key              
-                  if (!dateObj.bankHol) {
-                    monthDayArr.push({ day: i, booked: true, status: dateObj.status, key: dateObj.key });
-                    // or bank hol
-                  } else {
-                    monthDayArr.push({ day: i, bankHol: true });
-                  }
-
-                  // set for default-to-false skipping
-                  match = true;
+        // working one day here ie 2016/01/01 so only should be one match
+        // could we be working on too many dates? 
+        var match = false;
+        this.dates.forEach(dateObj => {
+          var splitDate = dateObj.date.split('-');
+          if (splitDate[2] === year) {
+            // console.log('year matched');
+            if (parseInt(splitDate[1]) === month) {
+              // console.log('month matched');
+              if (parseInt(splitDate[0]) === i) {
+                // console.log('day matched');
+                // we've found a match for this date, set booked and key              
+                if (!dateObj.bankHol) {
+                  monthDayArr.push({ day: i, booked: true, status: dateObj.status, key: dateObj.key });
+                  // or bank hol
+                } else {
+                  monthDayArr.push({ day: i, bankHol: true });
                 }
+                // set for default-to-false skipping
+                match = true;
               }
             }
-          });
-          if (!match) {
-            // TODO add some weeked logic
-            monthDayArr.push({ day: i, booked: false });
           }
+        });
+        if (!match) {
+          // TODO add some weeked logic
+          monthDayArr.push({ day: i, booked: false });
         }
+      }
 
-        // shift days along by day index
-        for (var i = 0; i < monthPos; i++) {
-          monthDayArr.unshift('');
-        }
+      // shift days along by day index
+      for (var i = 0; i < monthPos; i++) {
+        monthDayArr.unshift('');
+      }
 
-        // add days to month
-        this.monthArr.push(monthDayArr);
-      });
+      // add days to month
+      this.monthArr.push(monthDayArr);            
     });
+
 
     //create day headers
     var counter = 0;
@@ -184,14 +178,14 @@ export class DashCalComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getHols();
+    this.getHols(String(new Date().getFullYear()));
     // console.log(this.PublicHol.getBankHoliday().subscribe(data => console.log(data)));
 
     // this.createCal();
   }
 
   ngOnDestroy() {
-    this.holidayDataSub.unsubscribe();
+    // this.holidayDataSub.unsubscribe();
   }
 
 }
