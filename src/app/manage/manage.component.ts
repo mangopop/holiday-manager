@@ -55,6 +55,8 @@ export class ManageComponent {
 
   onUpdateUser(user) {
 
+    console.log(user);
+    
     var customUser = {
       firstname:user.firstname,
       surname:user.surname,
@@ -66,7 +68,7 @@ export class ManageComponent {
 
     // we might not set birthday so don't update it if not set
     if(user.birthday){
-      customUser['birthday'].user.birthday;
+      customUser['birthday'] = user.birthday;
     }
 
     console.log(customUser);
