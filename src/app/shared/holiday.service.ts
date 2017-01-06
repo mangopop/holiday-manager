@@ -30,7 +30,7 @@ export class HolidayService {
 
   // holiday: FirebaseListObservable<any[]>;
   holiday: FirebaseListObservable<any[]> = this.af.database.list('Holiday');
-  users: FirebaseObjectObservable<any[]> = this.af.database.object('Users');
+  users: FirebaseListObservable<any[]> = this.af.database.list('User');
   // holsPreserved$: FirebaseListObservable<any[]> = this.af.database.list('Holiday', { preserveSnapshot: true });
   uid;
   user$; // can we get this using getUser() ? no because it uses the user key
@@ -51,8 +51,6 @@ export class HolidayService {
   // TODO: add the key here
   // TODO: use login merge map
   addHoliday(booking) {
-    console.log(booking);
-
     booking.userId = this.uid;
     // can only identify by email? so do we grab email from auth and use this to query?
     this.UserList.getUserByEmail().subscribe(data => {
@@ -107,13 +105,31 @@ export class HolidayService {
     return this.holiday;
   }
 
-  // get holiday by user
+  // get holiday with user
+  // do have a mix here which is not a great idea
   getAllHolidaysAndUsers() {
     return this.holiday.map(items => {
       // console.log(items);
       for (let item of items) {
         // could run a query on the loginId tp find the user if it was added to the holiday
         item.user = this.af.database.object(`/User/${item.userIdKey}`);
+      }
+      return items;
+    });
+  }
+
+  // we are unwrapping a sub and return in correctly here, but for some reason this comes back undefined
+  getAllUserWithHolidays() {
+    return this.users.map(items => {
+      for (let item of items) {
+        item.holiday = this.af.database.list('Holiday',
+          {
+            query: {
+              orderByChild: 'userIdKey',
+              equalTo: item.$key 
+            }
+          }
+        )
       }
       return items;
     });

@@ -23,6 +23,7 @@ import { ApproveComponent } from './approve/approve.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { ProfileDetailsComponent } from './profile/profile-details/profile-details.component';
 import { LoginComponent } from './shared/login/login.component';
+import { SummaryComponent } from './summary/summary.component';
 
 // import { BookComponent } from './book/book.component';
 // import { BookFormComponent } from './book/book-form/book-form.component';
@@ -53,6 +54,7 @@ const myFirebaseAuthConfig = {
     CalendarComponent,
     ProfileDetailsComponent,
     LoginComponent,
+    SummaryComponent,
 
   ],
   imports: [
