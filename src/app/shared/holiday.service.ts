@@ -52,7 +52,7 @@ export class HolidayService {
   addHoliday(booking) {
     booking.userId = this.uid;
     // can only identify by email? so do we grab email from auth and use this to query?
-    this.UserList.getUserByEmail(this.userEmail).subscribe(data => {
+    this.UserList.getUserByEmail().subscribe(data => {
       booking.userIdKey = data[0].$key;
       booking.status = "pending";
       // TODO: probably don't need to return
@@ -69,8 +69,9 @@ export class HolidayService {
     });
   }
 
-  getHolidays() {
-    console.log('getHolidays');
+  // get holidays by user id
+  getHolidaysByUserId() {
+    console.log('getHolidaysByUserId');
     // this.getLogin();
     // when we get auth this is broadcasted and we recieve here
     // we are listening here, only getlogin is calling this
@@ -98,6 +99,7 @@ export class HolidayService {
     return this.holiday;
   }
 
+  // get holiday by user
   getAllHolidaysAndUsers() {
     return this.holiday.map(items => {
       // console.log(items);
@@ -117,10 +119,10 @@ export class HolidayService {
   // can we not just subscribe to this and then assing the separate values?
   getHolidayInfo() {
     console.log('called holiday info');
-    return this.getHolidays().mergeMap(hol => {
+    return this.getHolidaysByUserId().mergeMap(hol => {
       console.log(hol);
 
-      return this.UserList.getUserByEmailAuto().mergeMap(user => { //nested mergeMap here is required
+      return this.UserList.getUserByEmail().mergeMap(user => { //nested mergeMap here is required
         console.log(user);
 
         return this.Constants.getConstants().map(basicData => {

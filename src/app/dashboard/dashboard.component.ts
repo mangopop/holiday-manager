@@ -65,7 +65,7 @@ export class DashboardComponent implements OnInit {
     // https://github.com/angular/angularfire2/issues/574
 
     // array of matching bookings for user      
-    this.bookingDataSub = this.HolidayService.getHolidays().subscribe(data => {
+    this.bookingDataSub = this.HolidayService.getHolidaysByUserId().subscribe(data => {
       var currentYear = new Date().getFullYear();
       // we should only process the days that match the current year
       this.daysTaken = data.filter(hol => {
@@ -84,7 +84,7 @@ export class DashboardComponent implements OnInit {
         && (from === currentYear || to === currentYear || from === currentYear +1 || to === currentYear +1)
       }).reduce((pre, cur) => pre + cur.daysTaken, 0);
 
-      this.userDataSub = this.UserListService.getUserByEmailAuto().subscribe(data => {
+      this.userDataSub = this.UserListService.getUserByEmail().subscribe(data => {
         // var currentYear = new Date().getFullYear();
         var currentMonth = new Date().getMonth();
         var startDate = new Date(data[0].startDate)

@@ -63,7 +63,7 @@ export class ProfileComponent implements OnInit {
     //   });
     // });
 
-    this.userList$.getUserByEmail2().startWith([{}]).subscribe(data => {
+    this.userList$.getUserByEmail().startWith([{}]).subscribe(data => {
       console.log(data)
       this.user = data[0];
     });

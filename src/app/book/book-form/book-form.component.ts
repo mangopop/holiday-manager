@@ -114,9 +114,9 @@ export class BookFormComponent implements OnInit {
 
   // NOTE: CAN WE NOT MAP OVER THIS AND MAINTAIN OBSERVABLE BEFORE RETURNING TO REDUCE COMPONENT CODE?
   getHolidayInfo() {
-    // this.bookingData$ = this.HolidayService.getHolidays();
+    // this.bookingData$ = this.HolidayService.getHolidaysByUserId();
     //array of matching bookings for user      
-    this.bookingDataSub = this.HolidayService.getHolidays().subscribe(data => {
+    this.bookingDataSub = this.HolidayService.getHolidaysByUserId().subscribe(data => {
       var currentYear = new Date().getFullYear();
       this.daysTaken = data.filter(hol => {
         var from = new Date(hol.fromDate).getFullYear();
@@ -133,7 +133,7 @@ export class BookFormComponent implements OnInit {
         && (from === currentYear || to === currentYear || from === currentYear + 1 || to === currentYear + 1)
       }).reduce((pre, cur) => pre + cur.daysTaken, 0);
 
-      this.userDataSub = this.UserListService.getUserByEmailAuto().subscribe(data => {
+      this.userDataSub = this.UserListService.getUserByEmail().subscribe(data => {
         var currentYear = new Date().getFullYear();
         var currentMonth = new Date().getMonth();
         var startDate = new Date(data[0].startDate)
@@ -215,7 +215,7 @@ export class BookFormComponent implements OnInit {
   compareDates() {
     this.ok2book = true;
     var selectedDates = this.getSelectedDates();
-    this.HolidayService.getHolidays().subscribe(data => {
+    this.HolidayService.getHolidaysByUserId().subscribe(data => {
       data.forEach(element => {
         let fromDate2 = moment(element.fromDate).subtract(1, 'days');
         let toDate2 = moment(element.toDate).add(1, 'days');
@@ -273,7 +273,7 @@ export class BookFormComponent implements OnInit {
         // const userId = this.LoginStatus.getStatus();
         // console.log(userId);
 
-        const bookingData = this.HolidayService.getHolidays();
+        const bookingData = this.HolidayService.getHolidaysByUserId();
 
         // this will return multiple bookings
         bookingData.subscribe(data => {
