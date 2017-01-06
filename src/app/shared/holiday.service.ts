@@ -49,27 +49,35 @@ export class HolidayService {
   }
 
   // TODO: add the key here
+  // TODO: use login merge map
   addHoliday(booking) {
+    console.log(booking);
+
     booking.userId = this.uid;
     // can only identify by email? so do we grab email from auth and use this to query?
     this.UserList.getUserByEmail().subscribe(data => {
-      booking.userIdKey = data[0].$key;
-      booking.status = "pending";
-      // TODO: probably don't need to return
-      this.holiday.push(booking).then(resolve => {
-        console.log('all good');
-        return true;
-      }, reject => {
-        console.log('error');
-        return false;
-      })
-        .catch(reject => {
-          console.log('catch');
-        });
+      console.log(data); //why is this firing twice?
+      if (data[0] != null) {
+        booking.userIdKey = data[0].$key;
+        booking.status = "pending";
+        // TODO: probably don't need to return
+        this.holiday.push(booking).then(resolve => {
+          console.log('all good');
+          return true;
+        }, reject => {
+          console.log('error');
+          return false;
+        })
+          .catch(reject => {
+            console.log('catch');
+          });
+      }
+
     });
   }
 
   // get holidays by user id
+  // TODO: use login merge map
   getHolidaysByUserId() {
     console.log('getHolidaysByUserId');
     // this.getLogin();
@@ -127,7 +135,7 @@ export class HolidayService {
 
         return this.Constants.getConstants().map(basicData => {
           console.log(basicData);
-          
+
           var currentYear = new Date().getFullYear();
           var daysTaken = hol.filter(hol => {
             var from = new Date(hol.fromDate).getFullYear();
@@ -153,7 +161,7 @@ export class HolidayService {
             daysLeft: () => {
               console.log(user);
               var currentMonth = new Date().getMonth();
-              if (typeof user[0] != 'undefined'){
+              if (typeof user[0] != 'undefined') {
                 var startDate = new Date(user[0].startDate);
               }
 
