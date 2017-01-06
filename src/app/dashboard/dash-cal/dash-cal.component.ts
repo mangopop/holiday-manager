@@ -66,17 +66,20 @@ export class DashCalComponent implements OnInit {
     const holidayData: FirebaseListObservable<any[]> = this.HolidayService.getHolidaysByUserId();
     this.holidayDataSub = holidayData.subscribe(data => {
 
-      //go through each booking and gather 'dates' into a clean date array
-      const nestedDates = data.map(obj => obj.dates.map(dates => {
-        return {
-          date: dates.date,
-          status: obj.status,
-          key: obj.$key,
-        }
-      }));
-      this.dates = nestedDates.reduce((prev, curr) => {
-        return prev.concat(curr)
-      }, []);
+      //TODO filter out sick and upaid
+      this.dates = data
+      .filter(filtObj => filtObj.type !== 'Sick' && filtObj.type !== 'Unpaid')
+        .map(obj => obj.dates
+          .map(dates => {
+            return {
+              date: dates.date,
+              status: obj.status,
+              key: obj.$key,
+            }
+          }))
+        .reduce((prev, curr) => {
+          return prev.concat(curr)
+        }, []);
 
       //test
       // this.dates = [
@@ -85,7 +88,7 @@ export class DashCalComponent implements OnInit {
       // ];
 
       // need to check if this is duplicating an already booked date, adding here assumes its booked, which don't want
-      this.publicHolidaySub = this.PublicHol.getBankHoliday(year).subscribe(items => {        
+      this.publicHolidaySub = this.PublicHol.getBankHoliday(year).subscribe(items => {
         // THIS SEEMS WRONG TO LOOP AGAIN? BUT THIS IS HOW THE TUTORIAL DOES IT?
         items.forEach(item => {
           // if < 0 add it
@@ -163,7 +166,7 @@ export class DashCalComponent implements OnInit {
       }
 
       // add days to month
-      this.monthArr.push(monthDayArr);            
+      this.monthArr.push(monthDayArr);
     });
 
 

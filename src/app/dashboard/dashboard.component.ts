@@ -68,10 +68,11 @@ export class DashboardComponent implements OnInit {
     this.bookingDataSub = this.HolidayService.getHolidaysByUserId().subscribe(data => {
       var currentYear = new Date().getFullYear();
       // we should only process the days that match the current year
+      // TODO: do not process sick or unpaid
       this.daysTaken = data.filter(hol => {
         var from = new Date(hol.fromDate).getFullYear();
         var to = new Date(hol.toDate).getFullYear();
-        return hol.status === 'approved' 
+        return hol.status === 'approved' && (hol.type != 'Sick' && hol.type != 'Unpaid')
         // if any from or to data matches currentyear or currentyear + 1
         && (from === currentYear || to === currentYear || from === currentYear +1 || to === currentYear +1)
       }).reduce((pre, cur) => pre + cur.daysTaken, 0);
@@ -79,7 +80,7 @@ export class DashboardComponent implements OnInit {
       this.daysPending = data.filter(hol => {
         var from = new Date(hol.fromDate).getFullYear();
         var to = new Date(hol.toDate).getFullYear();
-        return hol.status === 'pending' 
+        return hol.status === 'pending' && (hol.type != 'Sick' && hol.type != 'Unpaid')
         // if any from or to data matches currentyear or currentyear + 1
         && (from === currentYear || to === currentYear || from === currentYear +1 || to === currentYear +1)
       }).reduce((pre, cur) => pre + cur.daysTaken, 0);

@@ -65,6 +65,8 @@ export class BookFormComponent implements OnInit {
   //   toDate: '2016-01-05'
   // }
 
+  //TODO: remove sick option unless mananger
+
   public types = [
     'Paid',
     'Unpaid',
@@ -77,6 +79,12 @@ export class BookFormComponent implements OnInit {
     { slot: 'Full' },
     { slot: 'Morning' }
   ];
+
+  filterTypes(){
+    this.UserListService.getUserByEmail().subscribe(data => {      
+      if(!data[0].manager) this.types.splice(3,1);      
+    });
+  }
 
   enumerateDaysBetweenDates(startDate, endDate) {
     var now = startDate, dates = [];
@@ -171,7 +179,7 @@ export class BookFormComponent implements OnInit {
     this.booking.daysTaken = 0;
 
     // if Unpaid is not selected calc daysTaken
-    if (this.booking.type !== 'Unpaid') {
+    if (this.booking.type !== 'Unpaid' || this.booking.type !== 'Sick') {
       // one day selected
       if (selectedDates.fromDate.isSame(selectedDates.toDate)) {
         // check for half day
@@ -260,6 +268,7 @@ export class BookFormComponent implements OnInit {
   get diagnostic() { return JSON.stringify(this.booking); }
 
   ngOnInit() {
+    this.filterTypes();
     this.getConstants();
     this.getHolidayInfo();
     // get the id from route params
