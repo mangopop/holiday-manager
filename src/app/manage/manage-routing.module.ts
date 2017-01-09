@@ -15,7 +15,7 @@ const routes: Routes = [];
   imports: [
     RouterModule.forChild([
       {
-        path: 'manage', component: ManageComponent,
+        path: 'manage', component: ManageComponent,        
         children: [
           { path: 'user/:id', component: ManageUserDetailsComponent },
           { path: 'user/new/', component: ManageUserDetailsComponent },          

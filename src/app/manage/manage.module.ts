@@ -25,7 +25,7 @@ import { UserFormComponent } from './user-form/user-form.component';
     ManageUserDetailsComponent,
     ManageComponent,
     SearchComponent,
-    UserFormComponent
+    UserFormComponent,
   ],
   providers: [
     UserListService //make this available for the module, which is fine.
