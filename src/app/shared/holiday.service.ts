@@ -106,134 +106,159 @@ export class HolidayService {
   }
 
   // get holiday with user
-  // do have a mix here which is not a great idea
+  // do have a mix here which is not a great idea, and is causing problems
   getAllHolidaysAndUsers() {
-    return this.holiday.map(items => {
-      // console.log(items);
-      for (let item of items) {
-        // could run a query on the loginId tp find the user if it was added to the holiday
-        item.user = this.af.database.object(`/User/${item.userIdKey}`);
-      }
-      return items;
-    });
-  }
+    //add the user for checking later
+    return this.UserList.getUserByEmail()
+      .mergeMap(loggedInUser => {
+        return this.holiday.mergeMap(items => { //mergemap here reduces the need to loop later.
+          // console.log(items);
 
-  // we are unwrapping a sub and return in correctly here, but for some reason this comes back undefined
-  getAllUserWithHolidays() {
-    return this.users.map(items => {
-      for (let item of items) {
-        item.holiday = this.af.database.list('Holiday',
-          {
-            query: {
-              orderByChild: 'userIdKey',
-              equalTo: item.$key 
-            }
+          for (let item of items) {
+            // could run a query on the loginId tp find the user if it was added to the holiday
+            // currently this is a high order observable, try and return it on same level
+            item.user = this.af.database.object(`/User/${item.userIdKey}`);
+            item.loggedInUser = loggedInUser
+
           }
-        )
-      }
-      return items;
-    });
-  }
-
-  // the beast,
-  // the beauty of this is we haven't subscribed, 
-  // it's all in sync
-  // and this is how services can be more useful
-  // one problem, how to pass it broken down into seperate components
-  // can we not just subscribe to this and then assing the separate values?
-  getHolidayInfo() {
-    console.log('called holiday info');
-    return this.getHolidaysByUserId().mergeMap(hol => {
-      console.log(hol);
-
-      return this.UserList.getUserByEmail().mergeMap(user => { //nested mergeMap here is required
-        console.log(user);
-
-        return this.Constants.getConstants().map(basicData => {
-          console.log(basicData);
-
-          var currentYear = new Date().getFullYear();
-          var daysTaken = hol.filter(hol => {
-            var from = new Date(hol.fromDate).getFullYear();
-            var to = new Date(hol.toDate).getFullYear();
-            return hol.status === 'approved'
-              // if any from or to data matches currentyear or currentyear + 1
-              && (from === currentYear || to === currentYear || from === currentYear + 1 || to === currentYear + 1)
-          }).reduce((pre, cur) => pre + cur.daysTaken, 0);
-          var daysPending = hol.filter(hol => {
-            var from = new Date(hol.fromDate).getFullYear();
-            var to = new Date(hol.toDate).getFullYear();
-            return hol.status === 'pending'
-              && (from === currentYear || to === currentYear || from === currentYear + 1 || to === currentYear + 1)
-          }).reduce((pre, cur) => pre + cur.daysTaken, 0);
-
-          for (var basicItem of basicData) {
-            var basic = basicItem.$value;
-          }
-
-          return {
-            daysTaken: daysTaken,
-            daysPending: daysPending,
-            daysLeft: () => {
-              console.log(user);
-              var currentMonth = new Date().getMonth();
-              if (typeof user[0] != 'undefined') {
-                var startDate = new Date(user[0].startDate);
-              }
-
-              var startYear = startDate.getFullYear();
-              // calculate service
-              var served = currentYear - startYear;
-              var service;
-
-              if (served < 5) { service = 0 }
-              if (served >= 5 && served <= 9) { service = 1 }
-              if (served >= 10 && served <= 14) { service = 3 }
-              if (served >= 15) { service = 5 }
-
-              // don't use basic if user has start in same year
-              if (currentYear === startYear) {
-                console.log('same year');
-                return Math.floor(((currentMonth - startDate.getMonth() + 1) / 12) * basic) - daysTaken + service;
-                // this.daysLeft = Math.floor((currentMonth - startDate.getMonth() +1) * 1.66);
-              } else {
-                return basic - daysTaken + service;
-              }
-            },
-            basic: basic
-          }
-
+          return items;
         });
       });
-    });
-
-    // result$.subscribe(data => console.log(data));
-
   }
 
-  // have to write it out this way until I figure out how to get results back from service post subscribe
-  // map?
-  getLogin() {
-    console.log('getlogin called');
+  // getAllHolidaysAndUsers2() {
+  //   return this.af.database.object('Holiday')
+  //     .mergeMap(items => {
+  //       // console.log(items);      
+  //       return items.mergeMap(itemq => {
+  //         return this.af.database.object(`/User/${itemq.userIdKey}`)
+  //           .map(user => {
+  //             // console.log(user);              
+  //             itemq.user = user;
+  //             return itemq;
+  //           });
+  //       });
+  //     });
+  // }
 
-    this.subject = new Subject();
-    this.loginStatus.getAuth().subscribe(
-      auth => {
-        console.log(auth);
-        if (auth != null) {
-          // push value to observer
-          this.subject.next(auth.uid);
-          // set in global 
-          this.uid = auth.uid;
-          this.userEmail = auth.auth.email;
+
+
+// we were unwrapping a sub and return in correctly here, but for some reason this comes back undefined ()
+getAllUserWithHolidays() {
+  return this.users.map(items => {
+    for (let item of items) {
+      item.holiday = this.af.database.list('Holiday',
+        {
+          query: {
+            orderByChild: 'userIdKey',
+            equalTo: item.$key
+          }
         }
-        else { console.log('error getting auth'); }
-      },
-      err => console.log('error'),
-      () => {
-        console.log('complete');
-      },
-    );
-  }
+      )
+    }
+    return items;
+  });
+}
+
+// the beast,
+// the beauty of this is we haven't subscribed, 
+// it's all in sync
+// and this is how services can be more useful
+// one problem, how to pass it broken down into seperate components
+// can we not just subscribe to this and then assing the separate values?
+getHolidayInfo() {
+  console.log('called holiday info');
+  return this.getHolidaysByUserId().mergeMap(hol => {
+    console.log(hol);
+
+    return this.UserList.getUserByEmail().mergeMap(user => { //nested mergeMap here is required
+      console.log(user);
+
+      return this.Constants.getConstants().map(basicData => {
+        console.log(basicData);
+
+        var currentYear = new Date().getFullYear();
+        var daysTaken = hol.filter(hol => {
+          var from = new Date(hol.fromDate).getFullYear();
+          var to = new Date(hol.toDate).getFullYear();
+          return hol.status === 'approved'
+            // if any from or to data matches currentyear or currentyear + 1
+            && (from === currentYear || to === currentYear || from === currentYear + 1 || to === currentYear + 1)
+        }).reduce((pre, cur) => pre + cur.daysTaken, 0);
+        var daysPending = hol.filter(hol => {
+          var from = new Date(hol.fromDate).getFullYear();
+          var to = new Date(hol.toDate).getFullYear();
+          return hol.status === 'pending'
+            && (from === currentYear || to === currentYear || from === currentYear + 1 || to === currentYear + 1)
+        }).reduce((pre, cur) => pre + cur.daysTaken, 0);
+
+        for (var basicItem of basicData) {
+          var basic = basicItem.$value;
+        }
+
+        return {
+          daysTaken: daysTaken,
+          daysPending: daysPending,
+          daysLeft: () => {
+            console.log(user);
+            var currentMonth = new Date().getMonth();
+            if (typeof user[0] != 'undefined') {
+              var startDate = new Date(user[0].startDate);
+            }
+
+            var startYear = startDate.getFullYear();
+            // calculate service
+            var served = currentYear - startYear;
+            var service;
+
+            if (served < 5) { service = 0 }
+            if (served >= 5 && served <= 9) { service = 1 }
+            if (served >= 10 && served <= 14) { service = 3 }
+            if (served >= 15) { service = 5 }
+
+            // don't use basic if user has start in same year
+            if (currentYear === startYear) {
+              console.log('same year');
+              return Math.floor(((currentMonth - startDate.getMonth() + 1) / 12) * basic) - daysTaken + service;
+              // this.daysLeft = Math.floor((currentMonth - startDate.getMonth() +1) * 1.66);
+            } else {
+              return basic - daysTaken + service;
+            }
+          },
+          basic: basic
+        }
+
+      });
+    });
+  });
+
+  // result$.subscribe(data => console.log(data));
+
+}
+
+// have to write it out this way until I figure out how to get results back from service post subscribe
+// map?
+getLogin() {
+  console.log('getlogin called');
+
+  this.subject = new Subject();
+  this.loginStatus.getAuth().subscribe(
+    auth => {
+      console.log(auth);
+      if (auth != null) {
+        // push value to observer
+        this.subject.next(auth.uid);
+        // set in global 
+        this.uid = auth.uid;
+        this.userEmail = auth.auth.email;
+      }
+      else { console.log('error getting auth'); }
+    },
+    err => console.log('error'),
+    () => {
+      console.log('complete');
+    },
+  );
+}
 
 }

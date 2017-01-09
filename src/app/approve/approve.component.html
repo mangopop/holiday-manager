@@ -1,4 +1,31 @@
-<!-- going to have to add some -->
+<!-- TODO: need to filter these user by teams -->
+
+<!--<table>
+  <tbody>
+    <tr>
+      <th>name</th>
+      <th>from date</th>
+      <th>to date</th>
+      <th>days taken</th>
+      <th>type</th>
+      <th>status</th>
+      <th>comments</th>
+      <th>approve/reject</th>
+    </tr>
+    <tr *ngFor="let item of mergeHolidays">
+
+      <td>{{ (item.user | async)?.firstname}} {{(item.user | async)?.surname}}</td>
+      <td>{{item.fromDate}}</td>
+      <td>{{item.toDate}}</td>      
+      <td>{{item.daysTaken}}</td>      
+      <td>{{item.type}}</td>
+      <td>{{item.status}}</td>
+      <td>{{item.comments}}</td>
+      <td><a (click)=approve(item)>Appprove</a> / <a (click)=reject(item)>Reject</a></td>      
+      
+    </tr>
+  </tbody>
+</table>  -->
 
 <table>
   <tbody>
@@ -12,17 +39,17 @@
       <th>comments</th>
       <th>approve/reject</th>
     </tr>
-    <tr *ngFor="let item of mergeHolidays$ | async">
-      <!--{{item.user | async | json}}-->
-      <td>{{ (item.user | async)?.firstname}} {{(item.user | async)?.surname}}</td>
-      <td>{{item.fromDate}}</td>
-      <td>{{item.toDate}}</td>      
-      <td>{{item.daysTaken}}</td>      
-      <td>{{item.type}}</td>
-      <td>{{item.status}}</td>
-      <td>{{item.comments}}</td>
+    <tr *ngFor="let item of mergeHolidays">
+
+      <td>{{item.user.firstname}} {{item.user.firstname}}</td>
+      <td>{{item.data.fromDate}}</td>
+      <td>{{item.data.toDate}}</td>      
+      <td>{{item.data.daysTaken}}</td>      
+      <td>{{item.data.type}}</td>
+      <td>{{item.data.status}}</td>
+      <td>{{item.data.comments}}</td>
       <td><a (click)=approve(item)>Appprove</a> / <a (click)=reject(item)>Reject</a></td>      
       
     </tr>
   </tbody>
-</table>
+</table>  

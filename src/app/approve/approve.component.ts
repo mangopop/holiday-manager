@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { HolidayService } from '../shared/holiday.service';
-import { Holiday } from '../model/holiday';
+// import { Holiday } from '../model/holiday';
 import { UserListService } from '../shared/user-list.service';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/Observable/combineLatest';
+// import { Observable } from 'rxjs/Observable';
+// import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/operator/switch';
+import 'rxjs/add/operator/merge';
+import 'rxjs/add/operator/mergeAll';
 
 /*
 instance method
@@ -25,29 +28,54 @@ Observable.merge(Observable.of(1), Observable.of(2)).subscribe(...);
 })
 export class ApproveComponent implements OnInit {
 
-  constructor(public HolidayService:HolidayService,public UserListService:UserListService) { }
+  constructor(public HolidayService: HolidayService, public UserListService: UserListService) { }
 
-  holidays$;
-  users$;
-  mergeHolidays$;
-  bookings:Holiday; //array
+  // holidays$;
+  // users$;
+  mergeHolidays: { data: any; user: any; }[] = [];
+  // bookings:Holiday; //array
 
   //change booking to approve 
-  approve(booking){
-    this.HolidayService.updateHoliday(booking,'approved');
+  approve(booking) {
+    this.HolidayService.updateHoliday(booking, 'approved');
   }
 
   //change booking to rejected
   //TODO what happens with the rejected holiday? this will clash unless deleted or updated
-  reject(booking){
-    this.HolidayService.updateHoliday(booking,'rejected');
+  reject(booking) {
+    this.HolidayService.updateHoliday(booking, 'rejected');
   }
 
   ngOnInit() {
-    // build list of bookings. 
-    this.holidays$ = this.HolidayService.getAllHolidays();
-    this.users$ = this.UserListService.getUsers();
-    this.mergeHolidays$ = this.HolidayService.getAllHolidaysAndUsers();
+    // list of holidays with user in each one. will need to map over each holiday and filter if user 
+
+    // this.mergeHolidays$ =
+    //   this.UserListService.getUserByEmail()
+    //   .mergeMap(data => this.HolidayService.getAllHolidaysAndUsers())
+    //   .subscribe(data => console.log(data) );
+
+
+    // this.UserListService.getUserByEmail()
+    //   //we merge useremail to holusers and flatten. 
+    //   // hol and user is an observable, with another on the prop user, this makes getting to it tricky
+    //   .mergeMap(loggedInUser => {
+
+    //   return this.HolidayService.getAllHolidaysAndUsers()
+    // }) 
+
+    // this.HolidayService.getAllHolidaysAndUsers2().subscribe(data => console.log(data));
+
+    this.HolidayService.getAllHolidaysAndUsers().subscribe(data => data.user.subscribe(user => {
+      // console.log(data);
+      // console.log(user);
+      if (data.loggedInUser[0].team === user.team) {
+        this.mergeHolidays.push({ data: data, user: user });
+      }
+
+    }));
+
+
+
 
     //TEST
     // this.bookings = [
