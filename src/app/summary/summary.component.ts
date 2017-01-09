@@ -25,6 +25,7 @@ export class SummaryComponent implements OnInit {
         // console.log(user); //array
         return data.filter(team => team.team === user[0].team).map(item => {
           // console.log(item); //object          
+          // the trick her was to map over the SUBSCRIPTION and return the value but then double subscribe at the end!
           return item.holiday.map(hol => {
             var holleft = 20 - hol.reduce((prev, curr) => prev + curr.daysTaken, 0)
             if (holleft > 0) {

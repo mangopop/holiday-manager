@@ -19,7 +19,7 @@ export class UserListService {
     // this.getLoginDetails();
   }
 
-    getUserByEmail() {
+  getUserByEmail() {
     // Don't forget, can't return subscribe, hence mergeMap
     return this.LoginStatus.getAuth().mergeMap(auth => {
       return this.af.database.list('User', {
