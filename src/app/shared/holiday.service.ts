@@ -5,6 +5,7 @@ import { LoginStatusService } from '../shared/login-status.service';
 import { UserListService } from '../shared/user-list.service';
 import { AngularFire, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
 import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/takeWhile';
 import 'rxjs/add/operator/concat';
 import 'rxjs/add/operator/map';
@@ -107,7 +108,7 @@ export class HolidayService {
 
   // get holiday with user
   // do have a mix here which is not a great idea, and is causing problems
-  getAllHolidaysAndUsers() {
+  getAllHolidaysAndUsers(): Observable<any> {
     //add the user for checking later
     return this.UserList.getUserByEmail()
       .mergeMap(loggedInUser => {
@@ -121,7 +122,7 @@ export class HolidayService {
             item.loggedInUser = loggedInUser
 
           }
-          return items;
+           return items;
         });
       });
   }
