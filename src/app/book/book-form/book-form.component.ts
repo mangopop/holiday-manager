@@ -38,12 +38,12 @@ export class BookFormComponent implements OnInit {
 
   uid: string;
   constants$: FirebaseListObservable<any>;
-  basic: number;
-  daysLeft: number;
-  daysTaken: number;
-  daysPending: number;
+  basic: number = 0;
+  daysLeft: number = 0;
+  daysTaken: number = 0;
+  daysPending: number = 0;
   // bookingData$: FirebaseListObservable<any>;
-  service: number;
+  service: number = 0;
 
   bookingDataSub;
   constantsSub;
@@ -152,12 +152,15 @@ export class BookFormComponent implements OnInit {
         if (served >= 5 && served <= 9) { this.service = 1 }
         if (served >= 10 && served <= 14) { this.service = 3 }
         if (served >= 15) { this.service = 5 }
+
+        var xhol = data[0].hasOwnProperty('xhol') || 0;
+
         // don't use basic if user has start in same year
         if (currentYear === startYear) {
-          this.daysLeft = Math.floor(((currentMonth - startDate.getMonth() + 1) / 12) * this.basic) - this.daysTaken + this.service + data[0].xhol;
+          this.daysLeft = Math.floor(((currentMonth - startDate.getMonth() + 1) / 12) * this.basic) - this.daysTaken + this.service + xhol;
           // this.daysLeft = Math.floor((currentMonth - startDate.getMonth() + 1) * 1.66);
         } else {
-          this.daysLeft = this.basic - this.daysTaken + this.service + data[0].xhol;
+          this.daysLeft = this.basic - this.daysTaken + this.service + xhol;
         }
         this.userDataSub.unsubscribe();
       });
