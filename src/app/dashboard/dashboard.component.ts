@@ -28,11 +28,11 @@ export class DashboardComponent implements OnInit {
 
   uid: string;
   // constants$: FirebaseListObservable<any>;
-  basic: number;
-  daysLeft: number;
-  daysTaken: number;
-  daysPending: number;
-  service: number;
+  basic: number = 0;
+  daysLeft: number = 0;
+  daysTaken: number = 0;
+  daysPending: number = 0;
+  service: number = 0;
   testService:Observable<any>;
   testObj;
   // bookingData$: FirebaseListObservable<any>;
@@ -49,13 +49,14 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  getHoliday(){
-    this.HolidayService.getHolidayInfo().subscribe(data =>{      
-      this.daysLeft = data.daysLeft();
-      this.daysPending = data.daysPending;
-      this.daysTaken = data.daysTaken;
-    });
-  }
+  //not using this at the moment?
+  // getHoliday(){
+  //   this.HolidayService.getHolidayInfo().subscribe(data =>{      
+  //     this.daysLeft = data.daysLeft();
+  //     this.daysPending = data.daysPending;
+  //     this.daysTaken = data.daysTaken;
+  //   });
+  // }
 
 
 
@@ -66,16 +67,19 @@ export class DashboardComponent implements OnInit {
 
     // array of matching bookings for user      
     this.bookingDataSub = this.HolidayService.getHolidaysByUserId().subscribe(data => {
+      
       var currentYear = new Date().getFullYear();
+
       // we should only process the days that match the current year
-      // TODO: do not process sick or unpaid
       this.daysTaken = data.filter(hol => {
+        // console.log(hol) // can see hol
         var from = new Date(hol.fromDate).getFullYear();
         var to = new Date(hol.toDate).getFullYear();
         return hol.status === 'approved' && (hol.type != 'Sick' && hol.type != 'Unpaid')
         // if any from or to data matches currentyear or currentyear + 1
         && (from === currentYear || to === currentYear || from === currentYear +1 || to === currentYear +1)
       }).reduce((pre, cur) => pre + cur.daysTaken, 0);
+
       //  pending panel hols
       this.daysPending = data.filter(hol => {
         var from = new Date(hol.fromDate).getFullYear();
@@ -86,6 +90,7 @@ export class DashboardComponent implements OnInit {
       }).reduce((pre, cur) => pre + cur.daysTaken, 0);
 
       this.userDataSub = this.UserListService.getUserByEmail().subscribe(data => {
+        console.log(data)
         // var currentYear = new Date().getFullYear();
         var currentMonth = new Date().getMonth();
         var startDate = new Date(data[0].startDate)
@@ -99,12 +104,13 @@ export class DashboardComponent implements OnInit {
         if (served >= 15) { this.service = 5 }
 
         // don't use basic if user has start in same year
-        if (currentYear === startYear) {
-          console.log('same year');          
-          this.daysLeft = Math.floor(((currentMonth - startDate.getMonth() + 1) / 12) * this.basic) - this.daysTaken + this.service + data[0].xhol;
+        if (currentYear === startYear) {          
+          let xhol = data[0].hasOwnProperty('xhol') || 0;
+          this.daysLeft = Math.floor(((currentMonth - startDate.getMonth() + 1) / 12) * this.basic) - this.daysTaken + this.service + xhol;
           // this.daysLeft = Math.floor((currentMonth - startDate.getMonth() +1) * 1.66);
         } else {
-          this.daysLeft = this.basic - this.daysTaken + this.service + data[0].xhol;
+          let xhol = data[0].hasOwnProperty('xhol') || 0;
+          this.daysLeft = this.basic - this.daysTaken + this.service + xhol;
         }
       });
 
