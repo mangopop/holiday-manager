@@ -49,7 +49,11 @@ export class SummaryComponent implements OnInit {
       // .do(log => console.log(log)) // mapped data
     })
     .do(log => console.log(log)) // also mapped data as it's merged?
-    .subscribe( item => this.results.push(item[0]))
+    .subscribe( item => {      
+      if(item.length > 0){
+        this.results.push(item[0]);
+      }
+    })
     
   }
 }
