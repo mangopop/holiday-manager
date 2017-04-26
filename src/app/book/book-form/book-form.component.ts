@@ -182,7 +182,8 @@ export class BookFormComponent implements OnInit {
     this.booking.daysTaken = 0;
 
     // if Unpaid is not selected calc daysTaken
-    if (this.booking.type !== 'Unpaid' || this.booking.type !== 'Sick') {
+    // FIXME: why can't we use !=='Sick'
+    if (this.booking.type !== 'Unpaid') {
       // one day selected
       if (selectedDates.fromDate.isSame(selectedDates.toDate)) {
         // check for half day

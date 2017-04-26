@@ -55,7 +55,6 @@ const myFirebaseAuthConfig = {
     ProfileDetailsComponent,
     LoginComponent,
     SummaryComponent,
-
   ],
   imports: [
     AngularFireModule.initializeApp(firebaseConfig),

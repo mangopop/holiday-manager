@@ -4,11 +4,11 @@
       <th>name</th>
       <th>days taken</th>
     </tr>
+    <!--{{summary$ | async | json}}-->
 
     <tr *ngFor="let item of results">
       <td>{{item.firstname}} {{item.surname}}</td>     
-      <td>{{item.hol}}</td>      
-      
+      <td>{{item.holiday}}</td>      
     </tr>
   </tbody>
 </table>

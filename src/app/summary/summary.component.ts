@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { HolidayService } from '../shared/holiday.service';
 import { UserListService } from '../shared/user-list.service';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/pluck';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-summary',
@@ -11,45 +14,42 @@ export class SummaryComponent implements OnInit {
 
   constructor(public HolidayService: HolidayService, public UserListService: UserListService) { }
 
-  summary$;
-  results: string[] = [];
-
+  summary$: any;
+  // results: string[] = [];
+  results: any[] = [];
 
   ngOnInit() {
     // filter out people with unbooked hols
-    //loop through each hol, add up days taken - basic + service + xhol 
-    //might want to kill this sub as changing user was fucking things up
+    // loop through each hol, add up days taken - basic + service + xhol 
+    // might want to kill this sub as changing user was fucking things up
+    // mergemap helps us return just one Observable for subscription
+    // assining this to a sub var only shows the last value?
     this.UserListService.getUserByEmail().mergeMap(user => {
-      return this.HolidayService.getAllUserWithHolidays().mergeMap(data => {
-        // console.log(data); //array 
-        // console.log(user); //array
-        return data.filter(team => team.team === user[0].team).map(item => {
-          // console.log(item); //object          
-          // the trick her was to map over the SUBSCRIPTION and return the value but then double subscribe at the end!
-          return item.holiday.map(hol => {
-            var holleft = 20 - hol.reduce((prev, curr) => prev + curr.daysTaken, 0)
-            if (holleft > 0) {
+       //mergemap on the final function will not return all values       
+      return this.HolidayService.getAllUserWithHolidays().map(data => {
+        // console.log(data); //object
+        return data
+        .filter(item => item.hol > 0)
+        .map(item => {
               return {
-                firstname: item.firstname,
+                firstname:item.firstname,
                 surname: item.surname,
-                hol: holleft
+                holiday: item.hol
               }
-            }
-
-          })
-        });
-
+        })
+        // console.log(user); //array
+        // if(data.item.team === user[0].team){ // mapped is still returning undefined?
+            //  return {
+            //     firstname:data.item.firstname,
+            //     surname: data.item.surname,
+            //     holiday: data.hol
+            //   }
+        // }
       })
-    }).subscribe(item => {
-        this.summary$ = item;
-        item.subscribe(test => {
-          this.results.push(test);
-        });
-      });;
-
-
-
-
+      // .do(log => console.log(log)) // mapped data
+    })
+    .do(log => console.log(log)) // also mapped data as it's merged?
+    .subscribe( item => this.results.push(item[0]))
+    
   }
-
 }

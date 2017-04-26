@@ -88,19 +88,24 @@ export class DashCalComponent implements OnInit {
       // ];
 
       // need to check if this is duplicating an already booked date, adding here assumes its booked, which don't want
-      this.publicHolidaySub = this.PublicHol.getBankHoliday(year).subscribe(items => {
-        // THIS SEEMS WRONG TO LOOP AGAIN? BUT THIS IS HOW THE TUTORIAL DOES IT?
-        items.forEach(item => {
-          // if < 0 add it
-          if (this.dates.indexOf(item.date.day + '-' + item.date.month + '-' + item.date.year) < 0) {
-            this.dates.push({ date: item.date.day + '-' + item.date.month + '-' + item.date.year, bankHol: true });
+      this.publicHolidaySub = this.PublicHol.getBankHoliday().subscribe(items => {
+        // console.log(items);   
+        items['england-and-wales'].events.forEach(pubhol => {
+         
+          // if we cannot pubhol date in the array of dates add to to collection (this comparison )
+          if (this.dates.indexOf(pubhol.date ) < 0) {
+            this.dates.push({ date: pubhol.date, bankHol: true });
           }
+          // if (this.dates.indexOf(item.date.day + '-' + item.date.month + '-' + item.date.year) < 0) {
+          //   this.dates.push({ date: item.date.day + '-' + item.date.month + '-' + item.date.year, bankHol: true });
+          // }
         });
-        // console.log(this.dates);
+
         this.createCal(year);
       });
       this.holidayDataSub.unsubscribe();
     });
+
   }
 
 
@@ -167,6 +172,7 @@ export class DashCalComponent implements OnInit {
 
       // add days to month
       this.monthArr.push(monthDayArr);
+      // console.log(this.monthArr);
     });
 
 

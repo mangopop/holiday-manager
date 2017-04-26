@@ -9,6 +9,10 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/takeWhile';
 import 'rxjs/add/operator/concat';
 import 'rxjs/add/operator/map';
+
+import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/operator/reduce';
+import 'rxjs/add/observable/from';
 import * as moment from 'moment';
 
 // singleton class?
@@ -106,26 +110,27 @@ export class HolidayService {
     return this.holiday;
   }
 
-  // get holiday with user
-  // do have a mix here which is not a great idea, and is causing problems
+
   getAllHolidaysAndUsers(): Observable<any> {
     //add the user for checking later
     return this.UserList.getUserByEmail()
       .mergeMap(loggedInUser => {
-        return this.holiday.mergeMap(items => { //mergemap here reduces the need to loop later.
-          // console.log(items);
+        return this.holiday
+          .mergeMap(items => { //mergemap here reduces the need to loop later.
+            // console.log(items);
 
-          for (let item of items) {
-            // could run a query on the loginId tp find the user if it was added to the holiday
-            // currently this is a high order observable, try and return it on same level
-            item.user = this.af.database.object(`/User/${item.userIdKey}`);
-            item.loggedInUser = loggedInUser
+            for (let item of items) {
+              // could run a query on the loginId tp find the user if it was added to the holiday
+              // currently this is a high order observable, try and return it on same level
+              item.user = this.af.database.object(`/User/${item.userIdKey}`);
+              item.loggedInUser = loggedInUser
 
-          }
-           return items;
-        });
+            }
+            return items;
+          });
       });
   }
+
 
   // getAllHolidaysAndUsers2() {
   //   return this.af.database.object('Holiday')
@@ -143,123 +148,151 @@ export class HolidayService {
   // }
 
 
-
-// we were unwrapping a sub and return in correctly here, but for some reason this comes back undefined ()
-getAllUserWithHolidays() {
-  return this.users.map(items => {
-    for (let item of items) {
-      item.holiday = this.af.database.list('Holiday',
-        {
+  // returning a FirebaseListObservable as property is causing a problem
+  // maps over users and adds holiday as Observable to obj using the userIdKey
+  // surely mergMap is the answer here
+  getAllUserWithHolidays() {
+    return this.users.mergeMap(items => {
+      // console.log(items); //array
+      return Observable.from(items) //because...?
+        // .do(log => console.log(log)) //each object from array
+        .mergeMap((item:any) => this.af.database.list('Holiday', {
           query: {
             orderByChild: 'userIdKey',
             equalTo: item.$key
           }
-        }
+        })
+        // .do(log => console.log(log)) // each group of holidays per user id
+        .map(holiday => {
+          item.hol = holiday.reduce((prev, curr) => prev + curr.daysTaken, 0)
+          return [item]
+        })
+        // .do(log => console.log(log)) //final oject with merged properties. This means we are returning objects not observables? Does come back as an Observable
       )
-    }
-    return items;
-  });
-}
+    });
+  }
 
-// the beast,
-// the beauty of this is we haven't subscribed, 
-// it's all in sync
-// and this is how services can be more useful
-// one problem, how to pass it broken down into seperate components
-// can we not just subscribe to this and then assing the separate values?
-getHolidayInfo() {
-  console.log('called holiday info');
-  return this.getHolidaysByUserId().mergeMap(hol => {
-    console.log(hol);
+  // getAllUserWithHolidays() {
+  //   return this.users
+  //   .map(items => {
+  //     for (let item of items) {
+  //       item.holiday = this.af.database.list('Holiday',
+  //         {
+  //           query: {
+  //             orderByChild: 'userIdKey',
+  //             equalTo: item.$key
+  //           }
+  //         }
+  //       ).map(holiday => { 
+  //             console.log(holiday)
+  //             return {
+  //               item: item, hol: holiday
+  //             } 
+  //           })
+  //     }
+  //     return items;
+  //   });
+  // }
 
-    return this.UserList.getUserByEmail().mergeMap(user => { //nested mergeMap here is required
-      console.log(user);
+  // the beast,
+  // the beauty of this is we haven't subscribed, 
+  // it's all in sync
+  // and this is how services can be more useful
+  // one problem, how to pass it broken down into seperate components
+  // can we not just subscribe to this and then assing the separate values?
+  getHolidayInfo() {
+    console.log('called holiday info');
+    return this.getHolidaysByUserId().mergeMap(hol => {
+      console.log(hol);
 
-      return this.Constants.getConstants().map(basicData => {
-        console.log(basicData);
+      return this.UserList.getUserByEmail().mergeMap(user => { //nested mergeMap here is required
+        console.log(user);
 
-        var currentYear = new Date().getFullYear();
-        var daysTaken = hol.filter(hol => {
-          var from = new Date(hol.fromDate).getFullYear();
-          var to = new Date(hol.toDate).getFullYear();
-          return hol.status === 'approved'
-            // if any from or to data matches currentyear or currentyear + 1
-            && (from === currentYear || to === currentYear || from === currentYear + 1 || to === currentYear + 1)
-        }).reduce((pre, cur) => pre + cur.daysTaken, 0);
-        var daysPending = hol.filter(hol => {
-          var from = new Date(hol.fromDate).getFullYear();
-          var to = new Date(hol.toDate).getFullYear();
-          return hol.status === 'pending'
-            && (from === currentYear || to === currentYear || from === currentYear + 1 || to === currentYear + 1)
-        }).reduce((pre, cur) => pre + cur.daysTaken, 0);
+        return this.Constants.getConstants().map(basicData => {
+          console.log(basicData);
 
-        for (var basicItem of basicData) {
-          var basic = basicItem.$value;
-        }
+          var currentYear = new Date().getFullYear();
+          var daysTaken = hol.filter(hol => {
+            var from = new Date(hol.fromDate).getFullYear();
+            var to = new Date(hol.toDate).getFullYear();
+            return hol.status === 'approved'
+              // if any from or to data matches currentyear or currentyear + 1
+              && (from === currentYear || to === currentYear || from === currentYear + 1 || to === currentYear + 1)
+          }).reduce((pre, cur) => pre + cur.daysTaken, 0);
+          var daysPending = hol.filter(hol => {
+            var from = new Date(hol.fromDate).getFullYear();
+            var to = new Date(hol.toDate).getFullYear();
+            return hol.status === 'pending'
+              && (from === currentYear || to === currentYear || from === currentYear + 1 || to === currentYear + 1)
+          }).reduce((pre, cur) => pre + cur.daysTaken, 0);
 
-        return {
-          daysTaken: daysTaken,
-          daysPending: daysPending,
-          daysLeft: () => {
-            console.log(user);
-            var currentMonth = new Date().getMonth();
-            if (typeof user[0] != 'undefined') {
-              var startDate = new Date(user[0].startDate);
-            }
+          for (var basicItem of basicData) {
+            var basic = basicItem.$value;
+          }
 
-            var startYear = startDate.getFullYear();
-            // calculate service
-            var served = currentYear - startYear;
-            var service;
+          return {
+            daysTaken: daysTaken,
+            daysPending: daysPending,
+            daysLeft: () => {
+              console.log(user);
+              var currentMonth = new Date().getMonth();
+              if (typeof user[0] != 'undefined') {
+                var startDate = new Date(user[0].startDate);
+              }
 
-            if (served < 5) { service = 0 }
-            if (served >= 5 && served <= 9) { service = 1 }
-            if (served >= 10 && served <= 14) { service = 3 }
-            if (served >= 15) { service = 5 }
+              var startYear = startDate.getFullYear();
+              // calculate service
+              var served = currentYear - startYear;
+              var service;
 
-            // don't use basic if user has start in same year
-            if (currentYear === startYear) {
-              console.log('same year');
-              return Math.floor(((currentMonth - startDate.getMonth() + 1) / 12) * basic) - daysTaken + service;
-              // this.daysLeft = Math.floor((currentMonth - startDate.getMonth() +1) * 1.66);
-            } else {
-              return basic - daysTaken + service;
-            }
-          },
-          basic: basic
-        }
+              if (served < 5) { service = 0 }
+              if (served >= 5 && served <= 9) { service = 1 }
+              if (served >= 10 && served <= 14) { service = 3 }
+              if (served >= 15) { service = 5 }
 
+              // don't use basic if user has start in same year
+              if (currentYear === startYear) {
+                console.log('same year');
+                return Math.floor(((currentMonth - startDate.getMonth() + 1) / 12) * basic) - daysTaken + service;
+                // this.daysLeft = Math.floor((currentMonth - startDate.getMonth() +1) * 1.66);
+              } else {
+                return basic - daysTaken + service;
+              }
+            },
+            basic: basic
+          }
+
+        });
       });
     });
-  });
 
-  // result$.subscribe(data => console.log(data));
+    // result$.subscribe(data => console.log(data));
 
-}
+  }
 
-// have to write it out this way until I figure out how to get results back from service post subscribe
-// map?
-getLogin() {
-  console.log('getlogin called');
+  // have to write it out this way until I figure out how to get results back from service post subscribe
+  // map?
+  getLogin() {
+    console.log('getlogin called');
 
-  this.subject = new Subject();
-  this.loginStatus.getAuth().subscribe(
-    auth => {
-      console.log(auth);
-      if (auth != null) {
-        // push value to observer
-        this.subject.next(auth.uid);
-        // set in global 
-        this.uid = auth.uid;
-        this.userEmail = auth.auth.email;
-      }
-      else { console.log('error getting auth'); }
-    },
-    err => console.log('error'),
-    () => {
-      console.log('complete');
-    },
-  );
-}
+    this.subject = new Subject();
+    this.loginStatus.getAuth().subscribe(
+      auth => {
+        console.log(auth);
+        if (auth != null) {
+          // push value to observer
+          this.subject.next(auth.uid);
+          // set in global 
+          this.uid = auth.uid;
+          this.userEmail = auth.auth.email;
+        }
+        else { console.log('error getting auth'); }
+      },
+      err => console.log('error'),
+      () => {
+        console.log('complete');
+      },
+    );
+  }
 
 }

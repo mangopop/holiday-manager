@@ -46,12 +46,11 @@ export class PublicHolService {
     // let year = new Date().getFullYear();
     // params.set('jsonp', 'JSONP_CALLBACK');
 
-    return this.http.get(
-      '/json/hols.json')
+    return this.http.get('/json/hols.json')
       .map((res: Response) => {
-        console.log(res.json().filter(data => data.division === 'england-and-wales'));
-        return res.json().filter(data => data.division === 'england-and-wales') || {};
-        // return res.json() || {};
+        // console.log(res.json()['england-and-wales']);
+        // return res.json().filter(data => data.division === 'england-and-wales') || {};
+        return res.json() || {};
       })
       // .startWith({ date: 'Loading...' })
       .catch((error: any) => Observable.throw(error || 'Server error'));
